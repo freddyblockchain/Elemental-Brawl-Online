@@ -1,0 +1,27 @@
+{
+	"identifier": "Level_1",
+	"uniqueIdentifer": "8cbe3bd0-fec0-11ee-8705-3790be9e0879",
+	"x": 448,
+	"y": 64,
+	"width": 256,
+	"height": 128,
+	"bgColor": "#1E1F26",
+	"neighbourLevels": [
+		{
+			"levelIid": "26777bd0-fec0-11ee-8705-bd263430058c",
+			"dir": "w"
+		},
+		{
+			"levelIid": "d95096f0-fec0-11ee-8705-351c6befc195",
+			"dir": "e"
+		}
+	],
+	"customFields": {
+		"World": "World1"
+	},
+	"layers": [
+		"Tiles.png",
+		"OnGround.png"
+	],
+	"entities" : {}
+}
