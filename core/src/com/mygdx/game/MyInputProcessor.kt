@@ -6,6 +6,7 @@ import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import com.mygdx.game.Abilities.KeyAbility
+import com.mygdx.game.Action.Action
 import com.mygdx.game.Enums.Direction
 import com.mygdx.game.Enums.getDirectionUnitVector
 
@@ -42,8 +43,10 @@ class MyInputProcessor : InputProcessor {
 
         if(Gdx.input.isTouched){
             val worldCords = camera.unproject(Vector3(Gdx.input.x.toFloat(),Gdx.input.y.toFloat(),0f))
-            val toGo = getUnitVectorTowardsPoint(player.currentPosition(), Vector2(worldCords.x,worldCords.y))
-            player.move(toGo)
+            val touchAction = Action.TouchAction(Pair(worldCords.x, worldCords.y), sessionKey)
+            playerActions.add(touchAction)
+
+            //player.move(toGo)
         }
 
     }

@@ -26,6 +26,7 @@ allprojects {
     ext {
         appName = "Elemental Brawl Online"
         gdxVersion = '1.12.1'
+        ktor_version= '2.0.0-beta-1'
         roboVMVersion = '2.3.20'
         box2DLightsVersion = '1.5'
         ashleyVersion = '1.7.4'
@@ -56,6 +57,9 @@ project(":core") {
 
         implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2"
         implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
+        implementation "io.ktor:ktor-client-core:$ktor_version"
+        implementation "io.ktor:ktor-client-okhttp:$ktor_version" // or any other engine you prefer
+        implementation "io.ktor:ktor-client-cio:$ktor_version"
     }
 }
 

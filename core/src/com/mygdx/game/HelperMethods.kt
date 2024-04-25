@@ -10,6 +10,7 @@ import com.mygdx.game.GameObjects.GameObject.GameObject
 import com.mygdx.game.GameObjects.Ground
 import com.mygdx.game.Managers.AreaManager
 import java.io.File
+import java.net.DatagramSocket
 
 fun HandleArea(areaName: String): Area {
     val root = JsonParser.getRoot("levels/${areaName}/data.json")
