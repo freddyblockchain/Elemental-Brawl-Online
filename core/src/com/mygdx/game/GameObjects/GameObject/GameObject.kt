@@ -43,11 +43,6 @@ abstract class GameObject(gameObjectData: GameObjectData, val size: Vector2): Re
     val gameObjectIid = gameObjectData.iid
     var collidingObjects: List<GameObject> = listOf()
     override fun render(batch: SpriteBatch){
-        if(currentGameMode is FlashbackMode){
-            sprite.setColor(0.6f, 0.6f, 1f, 1f);
-        } else {
-            sprite.setColor(1f, 1f, 1f, 1f);
-        }
         sprite.draw(batch)
     }
     open fun frameTask(){

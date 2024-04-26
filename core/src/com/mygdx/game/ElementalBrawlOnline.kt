@@ -12,10 +12,10 @@ import com.mygdx.game.Action.Action
 import com.mygdx.game.GameModes.GameMode
 import com.mygdx.game.GameModes.MainMode
 import com.mygdx.game.GameObjects.MoveableEntities.Characters.Player
-import com.mygdx.game.Managers.AnimationManager
-import com.mygdx.game.Managers.AreaManager
-import com.mygdx.game.Managers.DialogueManager
-import com.mygdx.game.Managers.NetworkingManager
+import com.mygdx.game.GameObjects.MoveableEntities.Characters.PlayerInitData
+import com.mygdx.game.GameState.GameStateManager
+import com.mygdx.game.Managers.*
+import com.mygdx.game.Managers.NetworkingManager.Companion.receiveGameStateFromServer
 import com.mygdx.game.Managers.NetworkingManager.Companion.sendMessageToServer
 import com.mygdx.game.ServerTraffic.Models.AuthorizationData
 import com.mygdx.game.ServerTraffic.httpClient
@@ -24,15 +24,20 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.http.content.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-lateinit var player: Player
+var player: Player = Player(GameObjectData(), Vector2(0f,0f),-1)
 lateinit var currentGameMode: GameMode
 lateinit var mainMode: MainMode
 lateinit var sessionKey: String
 val playerActions = mutableListOf<Action>()
+val players = mutableMapOf<Int,Player>()
+var gameState = GameState(emptyMap())
 
 var camera: OrthographicCamera = OrthographicCamera()
 class ElementalBrawlOnline : ApplicationAdapter() {
@@ -48,7 +53,6 @@ class ElementalBrawlOnline : ApplicationAdapter() {
         Gdx.input.inputProcessor = inputProcessor
         camera = OrthographicCamera()
         camera.setToOrtho(false, Gdx.graphics.width.toFloat() / 6, Gdx.graphics.height.toFloat() / 6)
-        player = Player(GameObjectData(x = 120, y = 0), Vector2(32f, 32f))
         mainMode = MainMode(inputProcessor)
         currentGameMode = mainMode
         shapeRenderer = ShapeRenderer()
@@ -56,7 +60,8 @@ class ElementalBrawlOnline : ApplicationAdapter() {
         DialogueManager.initSpeakableObjects()
        // getArticyDraftEntries()
         AreaManager.setActiveArea(AreaManager.areas[0].areaIdentifier)
-        AreaManager.getActiveArea()!!.gameObjects.add(player)
+        //val otherPlayer = Player(GameObjectData(x = 100, y = -100),  size = Vector2(64f,64f), 100)
+       // AreaManager.getActiveArea()!!.gameObjects.add(otherPlayer)
 
         val authorizationData = AuthorizationData("signed message", 10, "algo address", "fwqerwqeqw", NetworkingManager.localPort)
         runBlocking {
@@ -64,13 +69,19 @@ class ElementalBrawlOnline : ApplicationAdapter() {
                 contentType(ContentType.Application.Json)
                 setBody(Json.encodeToString(authorizationData))
             }
-            sessionKey = response.bodyAsText()
+            // Init player
+            val playerInitData = Json.decodeFromString<PlayerInitData>(response.bodyAsText())
+            sessionKey = playerInitData.sessionKey
+            player = Player(GameObjectData(x = 100, y = -100), Vector2(32f, 32f), playerInitData.playerNum)
+            players[playerInitData.playerNum] = player
+            AreaManager.getActiveArea()!!.gameObjects.add(player)
         }
-
     }
 
     override fun render() {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT or GL20.GL_DEPTH_BUFFER_BIT)
+        receiveGameStateFromServer()
+        GameStateManager.executeGameStateListeners()
         currentGameMode.spriteBatch.projectionMatrix = camera.combined
         RenderGraph.render(currentGameMode.spriteBatch)
         AnimationManager.addAnimationsToRender()

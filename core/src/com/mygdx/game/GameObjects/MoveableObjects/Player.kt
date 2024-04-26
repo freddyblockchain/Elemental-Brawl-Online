@@ -9,16 +9,19 @@ import com.mygdx.game.Collisions.CanMoveCollision
 import com.mygdx.game.DefaultTextureHandler
 import com.mygdx.game.Enums.Direction
 import com.mygdx.game.Enums.Layer
-import com.mygdx.game.Enums.PlayerState
 import com.mygdx.game.GameObjectData
 import com.mygdx.game.GameObjects.GameObject.MoveableObject
-import com.mygdx.game.player
+import com.mygdx.game.GameState.GameStateListener
+import com.mygdx.game.Managers.GameState
+import kotlinx.serialization.Serializable
 
-class Player(gameObjectData: GameObjectData, size: Vector2)
-    : MoveableObject(gameObjectData, size) {
+@Serializable
+data class PlayerInitData(val sessionKey: String, val playerNum: Int)
+enum class PLAYER_STATUS {ALIVE, DEAD}
+
+class Player(gameObjectData: GameObjectData, size: Vector2, val playerNum: Int)
+    : MoveableObject(gameObjectData, size){
     override val texture = DefaultTextureHandler.getTexture("player.png")
-    val butlerTexture = DefaultTextureHandler.getTexture("Butler.png")
-    val butlerSprite = Sprite(butlerTexture)
     override var speed: Float = 2f
     override val cannotMoveStrategy = NoAction()
     override val layer = Layer.PERSON
@@ -26,20 +29,10 @@ class Player(gameObjectData: GameObjectData, size: Vector2)
     override var canChangeDirection = true
     override val collision = CanMoveCollision()
     val abilities: MutableList<Ability> = mutableListOf()
-    var state: PlayerState = PlayerState.NORMAL
-
-    init {
-        butlerSprite.setSize(32f,48f)
-    }
+    var status: PLAYER_STATUS = PLAYER_STATUS.ALIVE
 
     override fun render(batch: SpriteBatch) {
-        when(state){
-            PlayerState.NORMAL -> super.render(batch)
-            PlayerState.BUTLERRIDING -> {
-                butlerSprite.setPosition(player.sprite.x, player.sprite.y - 16f)
-                butlerSprite.draw(batch)
-                super.render(batch)
-            }
-        }
+        println(Vector2(this.sprite.x, this.sprite.y))
+        super.render(batch)
     }
 }

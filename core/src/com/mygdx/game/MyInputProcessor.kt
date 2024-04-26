@@ -43,7 +43,7 @@ class MyInputProcessor : InputProcessor {
 
         if(Gdx.input.isTouched){
             val worldCords = camera.unproject(Vector3(Gdx.input.x.toFloat(),Gdx.input.y.toFloat(),0f))
-            val touchAction = Action.TouchAction(Pair(worldCords.x, worldCords.y), sessionKey)
+            val touchAction = Action.TouchAction(Pair(worldCords.x, worldCords.y))
             playerActions.add(touchAction)
 
             //player.move(toGo)
