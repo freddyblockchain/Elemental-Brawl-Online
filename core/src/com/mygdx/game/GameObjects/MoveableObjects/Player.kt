@@ -27,12 +27,12 @@ class Player(gameObjectData: GameObjectData, size: Vector2, val playerNum: Int)
     override val layer = Layer.PERSON
     override var direction = Direction.RIGHT
     override var canChangeDirection = true
+    var lastPositionDifference = Vector2(0f,0f)
     override val collision = CanMoveCollision()
     val abilities: MutableList<Ability> = mutableListOf()
     var status: PLAYER_STATUS = PLAYER_STATUS.ALIVE
 
     override fun render(batch: SpriteBatch) {
-        println(Vector2(this.sprite.x, this.sprite.y))
         super.render(batch)
     }
 }

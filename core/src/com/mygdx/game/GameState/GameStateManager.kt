@@ -1,6 +1,6 @@
 package com.mygdx.game.GameState
 
-import com.mygdx.game.gameState
+import com.mygdx.game.currentGameState
 
 class GameStateManager {
     companion object {
@@ -10,7 +10,7 @@ class GameStateManager {
         }
         fun executeGameStateListeners(){
             gameStateListeners.forEach {
-                it.processGameState(gameState)
+                it.processGameState(currentGameState)
             }
         }
     }

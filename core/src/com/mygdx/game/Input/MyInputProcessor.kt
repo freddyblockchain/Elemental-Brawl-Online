@@ -1,10 +1,11 @@
-package com.mygdx.game
+package com.mygdx.game.Input
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
+import com.mygdx.game.*
 import com.mygdx.game.Abilities.KeyAbility
 import com.mygdx.game.Action.Action
 import com.mygdx.game.Enums.Direction
@@ -40,15 +41,6 @@ class MyInputProcessor : InputProcessor {
             player.move(directionUnitVector)
             player.setRotation(directionUnitVector, player, 90f)
         }
-
-        if(Gdx.input.isTouched){
-            val worldCords = camera.unproject(Vector3(Gdx.input.x.toFloat(),Gdx.input.y.toFloat(),0f))
-            val touchAction = Action.TouchAction(Pair(worldCords.x, worldCords.y))
-            playerActions.add(touchAction)
-
-            //player.move(toGo)
-        }
-
     }
 
     override fun keyUp(keycode: Int): Boolean {
@@ -65,6 +57,11 @@ class MyInputProcessor : InputProcessor {
     }
 
     override fun touchDown(x: Int, y: Int, pointer: Int, button: Int): Boolean {
+        val worldCords = camera.unproject(Vector3(Gdx.input.x.toFloat(),Gdx.input.y.toFloat(),0f))
+        val touchAction = Action.TouchAction(Pair(worldCords.x, worldCords.y))
+        playerActions.add(touchAction)
+
+        //player.move(toGo)
         return false
     }
 

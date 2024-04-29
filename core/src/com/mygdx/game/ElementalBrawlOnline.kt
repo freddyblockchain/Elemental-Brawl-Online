@@ -14,6 +14,7 @@ import com.mygdx.game.GameModes.MainMode
 import com.mygdx.game.GameObjects.MoveableEntities.Characters.Player
 import com.mygdx.game.GameObjects.MoveableEntities.Characters.PlayerInitData
 import com.mygdx.game.GameState.GameStateManager
+import com.mygdx.game.Input.MyInputProcessor
 import com.mygdx.game.Managers.*
 import com.mygdx.game.Managers.NetworkingManager.Companion.receiveGameStateFromServer
 import com.mygdx.game.Managers.NetworkingManager.Companion.sendMessageToServer
@@ -23,11 +24,7 @@ import com.mygdx.game.Utils.RenderGraph
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.http.content.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -37,7 +34,14 @@ lateinit var mainMode: MainMode
 lateinit var sessionKey: String
 val playerActions = mutableListOf<Action>()
 val players = mutableMapOf<Int,Player>()
-var gameState = GameState(emptyMap())
+var currentGameState = GameState(emptyMap(), 0)
+var newGameState = GameState(emptyMap(), 0)
+val gameStates = mutableListOf<GameState>()
+var T0 = System.currentTimeMillis()
+var T1 = System.currentTimeMillis()
+var X0 = Vector2()
+var X1 = Vector2()
+
 
 var camera: OrthographicCamera = OrthographicCamera()
 class ElementalBrawlOnline : ApplicationAdapter() {
@@ -76,17 +80,28 @@ class ElementalBrawlOnline : ApplicationAdapter() {
             players[playerInitData.playerNum] = player
             AreaManager.getActiveArea()!!.gameObjects.add(player)
         }
+        val receiveInputScope = CoroutineScope(Dispatchers.IO)
+        receiveInputScope.launch {
+            receiveGameStateFromServer()
+        }
     }
 
     override fun render() {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT or GL20.GL_DEPTH_BUFFER_BIT)
-        receiveGameStateFromServer()
-        GameStateManager.executeGameStateListeners()
+        if(newGameState == currentGameState){
+            println("here Yo")
+            player.setPosition(getInterpolatedPosition(T0, T1, X0, X1))
+        }else if(newGameState != currentGameState){
+            //below code populates T0,T1, X0, X1
+            currentGameState = newGameState
+            GameStateManager.executeGameStateListeners()
+        }
+        //player?.setPosition(Vector2( playerData.position.first, playerData.position.second))
         currentGameMode.spriteBatch.projectionMatrix = camera.combined
         RenderGraph.render(currentGameMode.spriteBatch)
-        AnimationManager.addAnimationsToRender()
+        //AnimationManager.addAnimationsToRender()
         currentGameMode.FrameAction()
-        drawrects()
+       // drawrects()
         camera.position.set(player.sprite.x, player.sprite.y, 0f)
         camera.update()
         sendMessageToServer()
