@@ -71,12 +71,9 @@ class NetworkingManager{
                 val receivedText = String(packet.data, 0, packet.length).trim()
                 val packetData = Json.decodeFromString<GameState>(receivedText)
 
-
-                newGameState = packetData
-                T0 = T1
-                T1 = System.currentTimeMillis() + 500// Set future T1 considering update frequency and latency
-
-
+                if(packetData.gameTime > newGameState.gameTime){
+                    newGameState = packetData
+                }
                //println("current time is: " + currentTime + "Time s: " + newGameState.gameTime)
                //gameStates.sortBy { it.gameStateNum }
             }

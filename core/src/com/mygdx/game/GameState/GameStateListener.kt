@@ -11,7 +11,7 @@ class MovePlayers(): GameStateListener{
     override fun processGameState(gameState: GameState) {
         //println("game state is: " + gameState)
         gameState.playerStates.forEach {
-            val playerData = it.value
+           /* val playerData = it.value
             val player = players[playerData.playerNum]
             player?.status = playerData.status
            // player?.setPosition(Vector2((playerData.position.first), playerData.position.second))
@@ -19,7 +19,7 @@ class MovePlayers(): GameStateListener{
             X1 = Vector2(it.value.position.first, it.value.position.second)
             //println(Vector2((playerData.position.first), playerData.position.second))
             player?.currentUnitVector = Vector2(playerData.unitVectorDirection.first, playerData.unitVectorDirection.second)
-            player?.speed = playerData.speed
+            player?.speed = playerData.speed*/
         }
     }
 

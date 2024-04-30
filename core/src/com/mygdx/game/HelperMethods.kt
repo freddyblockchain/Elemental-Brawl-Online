@@ -79,14 +79,11 @@ fun distance(point1: Vector2, point2: Vector2): Float {
     return sqrt(first)
 }
 
-fun getInterpolatedPosition(T0: Long, T1: Long, X0: Vector2, X1: Vector2): Vector2 {
+fun getInterpolatedPosition(T0: Long, T1: Long, X0: Vector2, X1: Vector2, startTime: Long): Vector2 {
     // Ensure that alpha stays within the range of 0.0 to 1.0
-    val elapsedTime = System.currentTimeMillis() - T0
+    val elapsedTime = System.currentTimeMillis() - startTime
     val totalDuration = T1 - T0
     val alpha = (elapsedTime.toFloat() / totalDuration.toFloat()).coerceIn(0f, 1f)
-
-    println("diff is : +  $totalDuration")
-    println("elapsed time is : " + elapsedTime)
 
     // Calculate the interpolated position using the lerp method
     return X0.cpy().lerp(X1, alpha)
