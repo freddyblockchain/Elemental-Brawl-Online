@@ -36,20 +36,7 @@ val playerActions = mutableListOf<Action>()
 val players = mutableMapOf<Int,Player>()
 var currentGameState = GameState(emptyMap(), 0)
 var newGameState = GameState(emptyMap(), 0)
-val gameStates = mutableListOf<GameState>()
-var T0 = 0L
-var T1 = 0L + 50L
-var X0 = Vector2()
-var X1 = Vector2()
-var startTime = System.currentTimeMillis()
 var currentPos = Vector2()
-
-var increment = Vector2()
-
-var testT0 = System.currentTimeMillis()
-var testT1 = System.currentTimeMillis() + 50L
-
-var testX1 = Vector2()
 
 var frameCounter = 3
 
@@ -90,8 +77,6 @@ class ElementalBrawlOnline : ApplicationAdapter() {
             sessionKey = playerInitData.sessionKey
             player = Player(GameObjectData(x = 100, y = -100), Vector2(32f, 32f), playerInitData.playerNum)
             playerStartPos = player.initPosition
-            X0 = player.initPosition
-            X1 = player.initPosition
             players[playerInitData.playerNum] = player
             AreaManager.getActiveArea()!!.gameObjects.add(player)
         }
@@ -103,57 +88,22 @@ class ElementalBrawlOnline : ApplicationAdapter() {
 
     override fun render() {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT or GL20.GL_DEPTH_BUFFER_BIT)
-        //player.setPosition(getInterpolatedPosition(T0, T1 + 2000L, player.initPosition, Vector2(200f,100f)))
-        //player?.setPosition(Vector2( playerData.position.first, playerData.position.second))
         val prevPos = currentPos.cpy()
-        currentPos = getInterpolatedPosition(T0, T1, X0, X1, startTime)
+        currentPos = getInterpolatedPosition(ClientStateManager.T0, ClientStateManager.T1, player.X0, player.X1, System.currentTimeMillis() - ClientStateManager.startTime)
         println("distance is: " + distance(prevPos, currentPos))
         player.setPosition(currentPos)
-        if (distance(prevPos, currentPos) <= 0){
-            println("X0 is " + X0)
-            println("X1 is " + X1)
-            println("T0 is " + T0)
-            println("T1 is " + T1)
-            println("startTime is " + startTime)
-        }
         if(newGameState != currentGameState){
-            T0 = T1
-            startTime = System.currentTimeMillis()
-
             currentGameState = newGameState
-            T1 = newGameState.gameTime
-            if(T0 >= T1){
-                T0 = T1 - 1
-                println("Are we ever here?")
-                //Handle the case where our prediction makes it so that we are actally in front of T1
-            }
-            //GameStateManager.executeGameStateListeners()
+            ClientStateManager.serverUpdateState(currentGameState)
 
             val playerState = newGameState.playerStates.firstNotNullOf { it.value }
-            X1 = Vector2(playerState.position.first, playerState.position.second)
+            ClientStateManager.updateObjectFuture(Vector2(playerState.position.first, playerState.position.second), player)
+            ClientStateManager.setIncrement(player)
 
-            X0 = currentPos
-
-            println("frame counter is: " + frameCounter)
-            frameCounter = 0
-            //Depending on frames
-            increment = Vector2((X1 - X0)/3f)
-        }else if (newGameState == currentGameState && currentPos.epsilonEquals(X1, 0.1f)){
-            val timeBetweenLastUpdate = 16
-
-            T0 = T1
-            startTime = System.currentTimeMillis()
-
-            X1 += increment
-
-
-            X0 = currentPos
-            if(frameCounter >= 4){
-                println("X1 is: " + X1)
-                println("X0 is: " + X0)
-                println("increment is: " + increment)
-            }
-            T1 += timeBetweenLastUpdate
+            //do it halfway through the frame
+        }else if (newGameState == currentGameState && (System.currentTimeMillis() - ClientStateManager.startTime ) >= ((ClientStateManager.T1 - ClientStateManager.T0) - ((Gdx.graphics.deltaTime * 1000) / 2).toLong())){
+            ClientStateManager.clientUpdateState()
+            ClientStateManager.updateObjectFuture(player.X1 + player.increment, player)
         }
 
         currentGameMode.spriteBatch.projectionMatrix = camera.combined

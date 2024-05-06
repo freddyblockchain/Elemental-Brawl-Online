@@ -19,6 +19,10 @@ abstract class MoveableObject(gameObjectData: GameObjectData, size: Vector2) :
     private var canMove = true
     var currentUnitVector: Vector2 = Vector2(0f,0f)
 
+    var X0 = Vector2()
+    var X1 = Vector2()
+    var increment = Vector2()
+
     open fun move(newUnitVector: Vector2): Boolean {
         if (canMove) {
             val nextIncrement = newUnitVector * this.getCurrentSpeed()
