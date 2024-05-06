@@ -96,10 +96,6 @@ class ElementalBrawlOnline : ApplicationAdapter() {
             currentGameState = newGameState
             ClientStateManager.serverUpdateState(currentGameState)
 
-            val playerState = newGameState.playerStates.firstNotNullOf { it.value }
-            ClientStateManager.updateObjectFuture(Vector2(playerState.position.first, playerState.position.second), player)
-            ClientStateManager.setIncrement(player)
-
             //do it halfway through the frame
         }else if (newGameState == currentGameState && (System.currentTimeMillis() - ClientStateManager.startTime ) >= ((ClientStateManager.T1 - ClientStateManager.T0) - ((Gdx.graphics.deltaTime * 1000) / 2).toLong())){
             ClientStateManager.clientUpdateState()

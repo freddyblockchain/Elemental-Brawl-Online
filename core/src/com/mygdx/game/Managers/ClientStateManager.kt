@@ -4,22 +4,8 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.math.Vector2
 import com.mygdx.game.*
 import com.mygdx.game.GameObjects.GameObject.MoveableObject
+import com.mygdx.game.GameObjects.MoveableEntities.Characters.Player
 
-interface UpdateX1Strategy{
-    fun updateT1(moveableObject: MoveableObject)
-}
-
-class ClientPredictionUpdateX1: UpdateX1Strategy{
-    override fun updateT1(moveableObject: MoveableObject) {
-        moveableObject.X1 += moveableObject.increment
-    }
-}
-
-class ServerUpdateT1(val newX1: Vector2): UpdateX1Strategy{
-    override fun updateT1(moveableObject: MoveableObject) {
-        moveableObject.X1 = newX1
-    }
-}
 
 class ClientStateManager {
 
@@ -30,7 +16,21 @@ class ClientStateManager {
         val stateUpdateTime = 50L
 
         fun serverUpdateState(gameState: GameState){
+            //update time
             updateClientTime(gameState.gameTime)
+
+            gameState.playerStates.forEach { entry ->
+                val state = entry.value
+                var correspondingPlayer =
+                    AreaManager.getActiveArea()?.gameObjects?.firstOrNull { it is Player && it.playerNum == state.playerNum } as Player?
+
+                if(correspondingPlayer == null){
+                    correspondingPlayer = Player(GameObjectData(x = state.position.first.toInt(), y = state.position.second.toInt()), Vector2(32f,32f), state.playerNum)
+                    AreaManager.getActiveArea()?.gameObjects?.add(correspondingPlayer)
+                }
+                updateObjectFuture(Vector2(state.position.first, state.position.second), correspondingPlayer)
+                setIncrement(correspondingPlayer)
+            }
         }
 
         fun clientUpdateState(){
@@ -54,14 +54,6 @@ class ClientStateManager {
         }
         fun setIncrement(moveableObject: MoveableObject){
             moveableObject.increment = Vector2((moveableObject.X1 - moveableObject.X0)/(stateUpdateTime.toFloat() / (Gdx.graphics.deltaTime * 1000)))
-        }
-
-        private fun updateServerT1(moveableObject: MoveableObject, newX1: Vector2){
-            moveableObject.X1 = newX1
-        }
-
-        private fun updateClientT1(moveableObject: MoveableObject){
-            moveableObject.X1 += moveableObject.increment
         }
     }
 }
