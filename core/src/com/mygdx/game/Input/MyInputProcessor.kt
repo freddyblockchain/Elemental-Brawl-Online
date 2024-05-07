@@ -6,25 +6,20 @@ import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import com.mygdx.game.*
-import com.mygdx.game.Abilities.KeyAbility
+import com.mygdx.game.Abilities.AbilityManager
 import com.mygdx.game.Action.Action
 import com.mygdx.game.Enums.Direction
 import com.mygdx.game.Enums.getDirectionUnitVector
+import com.mygdx.game.UI.UIManager
 
 
 class MyInputProcessor : InputProcessor {
     override fun keyDown(keycode: Int): Boolean {
-
-        for (keyAbility in player.abilities.filterIsInstance<KeyAbility>()) {
-            if (keycode == keyAbility.triggerKey) {
-                keyAbility.onActivate()
-            }
-        }
         return false
     }
 
     fun handleInput() {
-        var directionUnitVector = Vector2(0f,0f)
+        var directionUnitVector = Vector2(0f, 0f)
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
             directionUnitVector = getDirectionUnitVector(Direction.LEFT)
         }
@@ -37,18 +32,13 @@ class MyInputProcessor : InputProcessor {
         if (Gdx.input.isKeyPressed(Input.Keys.S)) {
             directionUnitVector = getDirectionUnitVector(Direction.DOWN)
         }
-        if(directionUnitVector != Vector2(0f,0f)){
+        if (directionUnitVector != Vector2(0f, 0f)) {
             player.move(directionUnitVector)
             player.setRotation(directionUnitVector, player, 90f)
         }
     }
 
     override fun keyUp(keycode: Int): Boolean {
-        for (keyAbility in player.abilities.filterIsInstance<KeyAbility>()) {
-            if (keycode == keyAbility.triggerKey) {
-                keyAbility.onDeactivate()
-            }
-        }
         return false
     }
 
@@ -57,9 +47,35 @@ class MyInputProcessor : InputProcessor {
     }
 
     override fun touchDown(x: Int, y: Int, pointer: Int, button: Int): Boolean {
-        val worldCords = camera.unproject(Vector3(Gdx.input.x.toFloat(),Gdx.input.y.toFloat(),0f))
-        val touchAction = Action.TouchAction(Pair(worldCords.x, worldCords.y))
-        playerActions.add(touchAction)
+        // val point =
+        var abilityClicked = false
+        var abilityActivated = false
+        val touchPoint = Vector2(
+            x.toFloat(),
+            Gdx.graphics.height - y.toFloat()
+        )
+        val worldCoords = camera.unproject(Vector3(x.toFloat(), y.toFloat(), 0f))
+
+        if (AbilityManager.availableAbilities.any { it.pressed }) {
+            val activeAbility = AbilityManager.availableAbilities.first { it.pressed }
+            activeAbility.onActivate(touchPoint)
+            abilityActivated = true
+        } else {
+            for (ability in UIManager.abilityButtons) {
+                if (ability.sprite.boundingRectangle.contains(
+                        touchPoint
+                    )
+                ) {
+                    ability.onPress()
+                    abilityClicked = true
+                }
+            }
+        }
+
+        if (!abilityClicked && !abilityActivated) {
+            val touchAction = Action.TouchAction(Pair(worldCoords.x, worldCoords.y))
+            playerActions.add(touchAction)
+        }
 
         //player.move(toGo)
         return false

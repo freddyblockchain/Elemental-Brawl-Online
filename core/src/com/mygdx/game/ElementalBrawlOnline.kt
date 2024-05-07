@@ -5,6 +5,7 @@ import com.badlogic.gdx.ApplicationAdapter
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
+import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Polygon
 import com.badlogic.gdx.math.Vector2
@@ -20,6 +21,7 @@ import com.mygdx.game.Managers.NetworkingManager.Companion.receiveGameStateFromS
 import com.mygdx.game.Managers.NetworkingManager.Companion.sendMessageToServer
 import com.mygdx.game.ServerTraffic.Models.AuthorizationData
 import com.mygdx.game.ServerTraffic.httpClient
+import com.mygdx.game.UI.UIManager
 import com.mygdx.game.Utils.RenderGraph
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -90,7 +92,7 @@ class ElementalBrawlOnline : ApplicationAdapter() {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT or GL20.GL_DEPTH_BUFFER_BIT)
         val prevPos = currentPos.cpy()
         currentPos = getInterpolatedPosition(ClientStateManager.T0, ClientStateManager.T1, player.X0, player.X1, System.currentTimeMillis() - ClientStateManager.startTime)
-        println("distance is: " + distance(prevPos, currentPos))
+        //println("distance is: " + distance(prevPos, currentPos))
         player.setPosition(currentPos)
         if(newGameState != currentGameState){
             currentGameState = newGameState
@@ -110,7 +112,7 @@ class ElementalBrawlOnline : ApplicationAdapter() {
         camera.position.set(player.sprite.x, player.sprite.y, 0f)
         camera.update()
         sendMessageToServer()
-        frameCounter += 1
+        UIManager.render()
     }
 
     override fun dispose() {
