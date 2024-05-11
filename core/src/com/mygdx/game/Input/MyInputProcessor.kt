@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import com.mygdx.game.*
 import com.mygdx.game.Abilities.AbilityManager
-import com.mygdx.game.Action.Action
+import com.mygdx.game.Action.TouchAction
 import com.mygdx.game.Enums.Direction
 import com.mygdx.game.Enums.getDirectionUnitVector
 import com.mygdx.game.UI.UIManager
@@ -58,7 +58,7 @@ class MyInputProcessor : InputProcessor {
 
         if (AbilityManager.availableAbilities.any { it.pressed }) {
             val activeAbility = AbilityManager.availableAbilities.first { it.pressed }
-            activeAbility.onActivate(touchPoint)
+            activeAbility.onActivate(Vector2(worldCoords.x, worldCoords.y))
             abilityActivated = true
         } else {
             for (ability in UIManager.abilityButtons) {
@@ -73,7 +73,7 @@ class MyInputProcessor : InputProcessor {
         }
 
         if (!abilityClicked && !abilityActivated) {
-            val touchAction = Action.TouchAction(Pair(worldCoords.x, worldCoords.y))
+            val touchAction = TouchAction.Move(Pair(worldCoords.x, worldCoords.y))
             playerActions.add(touchAction)
         }
 

@@ -5,20 +5,19 @@ import com.badlogic.gdx.ApplicationAdapter
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Polygon
 import com.badlogic.gdx.math.Vector2
-import com.mygdx.game.Action.Action
+import com.mygdx.game.Action.TouchAction
 import com.mygdx.game.GameModes.GameMode
 import com.mygdx.game.GameModes.MainMode
 import com.mygdx.game.GameObjects.MoveableEntities.Characters.Player
 import com.mygdx.game.GameObjects.MoveableEntities.Characters.PlayerInitData
-import com.mygdx.game.GameState.GameStateManager
 import com.mygdx.game.Input.MyInputProcessor
 import com.mygdx.game.Managers.*
 import com.mygdx.game.Managers.NetworkingManager.Companion.receiveGameStateFromServer
 import com.mygdx.game.Managers.NetworkingManager.Companion.sendMessageToServer
+import com.mygdx.game.Models.GameState
 import com.mygdx.game.ServerTraffic.Models.AuthorizationData
 import com.mygdx.game.ServerTraffic.httpClient
 import com.mygdx.game.UI.UIManager
@@ -34,10 +33,10 @@ var player: Player = Player(GameObjectData(), Vector2(0f,0f),-1)
 lateinit var currentGameMode: GameMode
 lateinit var mainMode: MainMode
 lateinit var sessionKey: String
-val playerActions = mutableListOf<Action>()
+val playerActions = mutableListOf<TouchAction>()
 val players = mutableMapOf<Int,Player>()
-var currentGameState = GameState(emptyMap(), 0)
-var newGameState = GameState(emptyMap(), 0)
+var currentGameState = GameState(mutableListOf(), 0)
+var newGameState = GameState(mutableListOf(), 0)
 var currentPos = Vector2()
 
 var frameCounter = 3
@@ -108,7 +107,7 @@ class ElementalBrawlOnline : ApplicationAdapter() {
         RenderGraph.render(currentGameMode.spriteBatch)
         //AnimationManager.addAnimationsToRender()
         currentGameMode.FrameAction()
-       // drawrects()
+        drawrects()
         camera.position.set(player.sprite.x, player.sprite.y, 0f)
         camera.update()
         sendMessageToServer()

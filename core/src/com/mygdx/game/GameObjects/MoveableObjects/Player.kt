@@ -11,8 +11,6 @@ import com.mygdx.game.Enums.Direction
 import com.mygdx.game.Enums.Layer
 import com.mygdx.game.GameObjectData
 import com.mygdx.game.GameObjects.GameObject.MoveableObject
-import com.mygdx.game.GameState.GameStateListener
-import com.mygdx.game.Managers.GameState
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -20,7 +18,7 @@ data class PlayerInitData(val sessionKey: String, val playerNum: Int)
 enum class PLAYER_STATUS {ALIVE, DEAD}
 
 class Player(gameObjectData: GameObjectData, size: Vector2, val playerNum: Int)
-    : MoveableObject(gameObjectData, size){
+    : MoveableObject(gameObjectData, size, playerNum){
     override val texture = DefaultTextureHandler.getTexture("player.png")
     override var speed: Float = 2f
     override val cannotMoveStrategy = NoAction()

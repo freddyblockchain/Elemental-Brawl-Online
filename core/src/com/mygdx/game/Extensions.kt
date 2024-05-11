@@ -26,3 +26,6 @@ operator fun FloatArray.minus(vector2: Vector2): FloatArray{
 operator fun Vector2.unaryMinus(): Vector2 {
     return Vector2(-this.x,-this.y)
 }
+fun Vector2(pair: Pair<Float, Float>): Vector2 {
+    return Vector2(pair.first, pair.second)
+}

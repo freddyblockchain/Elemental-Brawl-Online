@@ -1,8 +1,10 @@
 package com.mygdx.game.Managers
 
+import com.example.game.JsonConfig
 import com.mygdx.game.*
-import com.mygdx.game.Action.Action
-import com.mygdx.game.GameObjects.MoveableEntities.Characters.PLAYER_STATUS
+import com.mygdx.game.Action.TouchAction
+import com.mygdx.game.Models.GameState
+import com.mygdx.game.Models.ServerGameObject
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -12,16 +14,7 @@ import java.net.InetAddress
 import java.net.InetSocketAddress
 
 @Serializable
-data class UdpPacket(val action: Action, val sessionKey: String)
-
-@Serializable
-data class Game(val action: Action, val sessionKey: String)
-
-@Serializable
-data class GameState(val playerStates: Map<String, PlayerServerData>, val gameTime: Long)
-
-@Serializable
-data class PlayerServerData(val position: Pair<Float,Float>, val status: PLAYER_STATUS, val playerNum: Int, val speed: Float, val unitVectorDirection: Pair<Float,Float>)
+data class UdpPacket(val action: TouchAction, val sessionKey: String)
 class NetworkingManager{
     companion object {
         val serverPort = 50000
@@ -44,7 +37,7 @@ class NetworkingManager{
 
                 // Prepare a message to send
                 for (action in playerActions){
-                    val message = Json.encodeToString(UdpPacket(action, sessionKey))
+                    val message = JsonConfig.json.encodeToString(UdpPacket(action, sessionKey))
                     val buffer = message.toByteArray()
 
                     // Assuming the server is running on localhost and listening on port 9999

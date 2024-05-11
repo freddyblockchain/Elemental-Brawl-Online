@@ -10,9 +10,10 @@ import com.mygdx.game.GameObjects.MoveableEntities.Characters.Player
 import com.mygdx.game.Managers.AreaManager
 import com.mygdx.game.player
 
-abstract class Projectile(gameObjectData: GameObjectData, size: Vector2,open var unitVectorDirection: Vector2) : MoveableObject(gameObjectData, size){
+abstract class Projectile(gameObjectData: GameObjectData, size: Vector2,open var unitVectorDirection: Vector2, gameObjectNumber: Int) : MoveableObject(gameObjectData, size, gameObjectNumber){
 
     override val collision = ProjectileCollision(this)
+
     override fun frameTask() {
         super.frameTask()
         this.move(unitVectorDirection)

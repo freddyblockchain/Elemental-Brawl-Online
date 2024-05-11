@@ -11,7 +11,7 @@ import com.mygdx.game.Managers.CollitionManager.Companion.handleMoveCollisions
 import com.mygdx.game.plus
 import com.mygdx.game.times
 
-abstract class MoveableObject(gameObjectData: GameObjectData, size: Vector2) :
+abstract class MoveableObject(gameObjectData: GameObjectData, size: Vector2, val gameObjectNumber: Int) :
     GameObject(gameObjectData, size), RotationalObject by DefaultRotationalObject(),
     DirectionalObject {
     abstract var speed: Float

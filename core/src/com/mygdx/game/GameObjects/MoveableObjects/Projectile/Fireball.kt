@@ -9,7 +9,7 @@ import com.mygdx.game.Enums.getDirectionFromUnitVector
 import com.mygdx.game.GameObjectData
 
 
-class Fireball(gameObjectData: GameObjectData, size: Vector2, unitVectorDirection: Vector2) : Projectile(gameObjectData, size, unitVectorDirection) {
+class Fireball(gameObjectData: GameObjectData, size: Vector2, unitVectorDirection: Vector2, gameObjectNumber: Int) : Projectile(gameObjectData, size, unitVectorDirection, gameObjectNumber) {
     override var speed = 6f
     override val cannotMoveStrategy = RemoveObject()
     override val texture = DefaultTextureHandler.getTexture("fireball.png")

@@ -63,6 +63,9 @@ abstract class GameObject(gameObjectData: GameObjectData, val size: Vector2): Re
     fun currentPosition(): Vector2 {
         return Vector2(sprite.x,sprite.y)
     }
+    fun currentPositionPair(): Pair<Float, Float>{
+        return Pair(first = sprite.x, second = sprite.y)
+    }
 
     fun remove(){
         AreaManager.getActiveArea()!!.gameObjects.remove(this)
