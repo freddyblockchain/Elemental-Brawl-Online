@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Vector2
 import com.mygdx.game.Action.TouchAction
 import com.mygdx.game.GameModes.GameMode
 import com.mygdx.game.GameModes.MainMode
+import com.mygdx.game.GameObjects.GameObject.MoveableObject
 import com.mygdx.game.GameObjects.MoveableEntities.Characters.Player
 import com.mygdx.game.GameObjects.MoveableEntities.Characters.PlayerInitData
 import com.mygdx.game.Input.MyInputProcessor
@@ -89,10 +90,11 @@ class ElementalBrawlOnline : ApplicationAdapter() {
 
     override fun render() {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT or GL20.GL_DEPTH_BUFFER_BIT)
-        val prevPos = currentPos.cpy()
-        currentPos = getInterpolatedPosition(ClientStateManager.T0, ClientStateManager.T1, player.X0, player.X1, System.currentTimeMillis() - ClientStateManager.startTime)
-        //println("distance is: " + distance(prevPos, currentPos))
-        player.setPosition(currentPos)
+        val moveableObjects = AreaManager.getActiveArea()!!.gameObjects.filterIsInstance<MoveableObject>()
+        moveableObjects.forEach {
+            currentPos = getInterpolatedPosition(ClientStateManager.T0, ClientStateManager.T1, it.X0, it.X1, System.currentTimeMillis() - ClientStateManager.startTime)
+            it.setPosition(currentPos)
+        }
         if(newGameState != currentGameState){
             currentGameState = newGameState
             ClientStateManager.serverUpdateState(currentGameState)

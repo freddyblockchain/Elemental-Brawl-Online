@@ -20,7 +20,7 @@ enum class PLAYER_STATUS {ALIVE, DEAD}
 class Player(gameObjectData: GameObjectData, size: Vector2, val playerNum: Int)
     : MoveableObject(gameObjectData, size, playerNum){
     override val texture = DefaultTextureHandler.getTexture("player.png")
-    override var speed: Float = 2f
+    override var speed: Float = 20f
     override val cannotMoveStrategy = NoAction()
     override val layer = Layer.PERSON
     override var direction = Direction.RIGHT
@@ -29,6 +29,11 @@ class Player(gameObjectData: GameObjectData, size: Vector2, val playerNum: Int)
     override val collision = CanMoveCollision()
     val abilities: MutableList<Ability> = mutableListOf()
     var status: PLAYER_STATUS = PLAYER_STATUS.ALIVE
+
+    override fun frameTask() {
+        super.frameTask()
+        setRotation(this.currentUnitVector,this,90f)
+    }
 
     override fun render(batch: SpriteBatch) {
         super.render(batch)

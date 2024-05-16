@@ -58,7 +58,7 @@ class NetworkingManager{
         }
         fun receiveGameStateFromServer() {
             while(true) {
-                val buffer = ByteArray(1024)  // Buffer for incomingF data
+                val buffer = ByteArray(4096)  // Buffer for incomingF data
                 val packet = DatagramPacket(buffer, buffer.size)
                 listeningSocket.receive(packet)  // Receive a packet (blocking call)
                 val receivedText = String(packet.data, 0, packet.length).trim()

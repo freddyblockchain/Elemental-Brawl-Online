@@ -16,7 +16,6 @@ abstract class Projectile(gameObjectData: GameObjectData, size: Vector2,open var
 
     override fun frameTask() {
         super.frameTask()
-        this.move(unitVectorDirection)
     }
 }
 

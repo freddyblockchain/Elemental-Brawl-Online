@@ -40,20 +40,36 @@ class ClientStateManager {
             gameState.objectStates.forEach { entry ->
                 parseServerGameObject(entry)
             }
+            removeOldObjects(gameState.objectStates)
+        }
+
+        fun removeOldObjects(serverGameObjects: List<ServerGameObject>){
+            val serverGameObjectNumbers = serverGameObjects.map { it.serverGameObjectData.gameObjectNum }
+            val existingObjects =  AreaManager.getActiveArea()!!.gameObjects.filterIsInstance<MoveableObject>()
+            existingObjects.forEach {
+                if(it.gameObjectNumber !in serverGameObjectNumbers){
+                    println("Removed an object!")
+                    AreaManager.getActiveArea()!!.gameObjects.remove(it)
+                }
+            }
         }
 
         fun parseServerGameObject(serverGameObject: ServerGameObject){
             val serverGameObjectData = serverGameObject.serverGameObjectData
-            val objectInAreaManager = AreaManager.getActiveArea()!!.gameObjects.filterIsInstance<MoveableObject>().firstOrNull() { it.gameObjectNumber == serverGameObjectData.gameObjectNum }
+            val existingObjects =  AreaManager.getActiveArea()!!.gameObjects.filterIsInstance<MoveableObject>()
+            val objectInAreaManager = existingObjects.firstOrNull() { it.gameObjectNumber == serverGameObjectData.gameObjectNum }
             if(objectInAreaManager != null){
-                setObjectBasedOnData(objectInAreaManager as MoveableObject, serverGameObject)
+                setObjectBasedOnData(objectInAreaManager, serverGameObject)
             } else {
                 val gameObject: MoveableObject =  when(serverGameObjectData.gameObjectType){
                     GameObjectType.PLAYER -> Player(gameObjectData = GameObjectData(x = serverGameObjectData.position.first.toInt(), y = serverGameObjectData.position.second.toInt()), Vector2(32f,32f), serverGameObjectData.gameObjectNum)
                     GameObjectType.FIREBALL -> Fireball(gameObjectData = GameObjectData(x = serverGameObjectData.position.first.toInt(), y = serverGameObjectData.position.second.toInt()), size = Vector2(60f,30f), unitVectorDirection = Vector2(serverGameObjectData.unitVectorDirection), gameObjectNumber = serverGameObjectData.gameObjectNum)
                 }
+                gameObject.X0 = Vector2(serverGameObjectData.position.first, serverGameObjectData.position.second)
+                gameObject.X1 = Vector2(serverGameObjectData.position.first, serverGameObjectData.position.second)
                 AreaManager.getActiveArea()!!.gameObjects.add(gameObject)
             }
+
         }
 
         fun setObjectBasedOnData(gameObject: MoveableObject, serverGameObject: ServerGameObject){
