@@ -6,9 +6,7 @@ import com.mygdx.game.*
 import com.mygdx.game.GameObjects.GameObject.MoveableObject
 import com.mygdx.game.GameObjects.MoveableEntities.Characters.Player
 import com.mygdx.game.GameObjects.MoveableObjects.Projectile.Fireball
-import com.mygdx.game.Models.GameObjectType
-import com.mygdx.game.Models.GameState
-import com.mygdx.game.Models.ServerGameObject
+import com.mygdx.game.Models.*
 
 
 class ClientStateManager {
@@ -19,12 +17,12 @@ class ClientStateManager {
         var startTime = System.currentTimeMillis()
         val stateUpdateTime = 50L
 
-        fun clientUpdateState(){
+        fun clientUpdateState() {
             updateClientTime(T1 + (Gdx.graphics.deltaTime * 1000).toLong())
         }
 
-        private fun updateClientTime(newT1: Long){
-            if(T0 >= T1){
+        private fun updateClientTime(newT1: Long) {
+            if (T0 >= T1) {
                 T0 = T1 - 1
                 //Handle the case where our prediction makes it so that we are actally in front of T1
             }
@@ -33,7 +31,7 @@ class ClientStateManager {
             T1 = newT1
         }
 
-        fun serverUpdateState(gameState: GameState){
+        fun serverUpdateState(gameState: GameState) {
             //update time
             updateClientTime(gameState.gameTime)
 
@@ -43,27 +41,42 @@ class ClientStateManager {
             removeOldObjects(gameState.objectStates)
         }
 
-        fun removeOldObjects(serverGameObjects: List<ServerGameObject>){
+        fun removeOldObjects(serverGameObjects: List<ServerGameObject>) {
             val serverGameObjectNumbers = serverGameObjects.map { it.serverGameObjectData.gameObjectNum }
-            val existingObjects =  AreaManager.getActiveArea()!!.gameObjects.filterIsInstance<MoveableObject>()
+            val existingObjects = AreaManager.getActiveArea()!!.gameObjects.filterIsInstance<MoveableObject>()
             existingObjects.forEach {
-                if(it.gameObjectNumber !in serverGameObjectNumbers){
+                if (it.gameObjectNumber !in serverGameObjectNumbers) {
                     println("Removed an object!")
                     AreaManager.getActiveArea()!!.gameObjects.remove(it)
                 }
             }
         }
 
-        fun parseServerGameObject(serverGameObject: ServerGameObject){
+        fun parseServerGameObject(serverGameObject: ServerGameObject) {
             val serverGameObjectData = serverGameObject.serverGameObjectData
-            val existingObjects =  AreaManager.getActiveArea()!!.gameObjects.filterIsInstance<MoveableObject>()
-            val objectInAreaManager = existingObjects.firstOrNull() { it.gameObjectNumber == serverGameObjectData.gameObjectNum }
-            if(objectInAreaManager != null){
+            val existingObjects = AreaManager.getActiveArea()!!.gameObjects.filterIsInstance<MoveableObject>()
+            val objectInAreaManager =
+                existingObjects.firstOrNull() { it.gameObjectNumber == serverGameObjectData.gameObjectNum }
+            if (objectInAreaManager != null) {
                 setObjectBasedOnData(objectInAreaManager, serverGameObject)
             } else {
-                val gameObject: MoveableObject =  when(serverGameObjectData.gameObjectType){
-                    GameObjectType.PLAYER -> Player(gameObjectData = GameObjectData(x = serverGameObjectData.position.first.toInt(), y = serverGameObjectData.position.second.toInt()), Vector2(32f,32f), serverGameObjectData.gameObjectNum)
-                    GameObjectType.FIREBALL -> Fireball(gameObjectData = GameObjectData(x = serverGameObjectData.position.first.toInt(), y = serverGameObjectData.position.second.toInt()), size = Vector2(60f,30f), unitVectorDirection = Vector2(serverGameObjectData.unitVectorDirection), gameObjectNumber = serverGameObjectData.gameObjectNum)
+                val gameObject: MoveableObject = when (serverGameObjectData.gameObjectType) {
+                    GameObjectType.PLAYER -> Player(
+                        gameObjectData = GameObjectData(
+                            x = serverGameObjectData.position.first.toInt(),
+                            y = serverGameObjectData.position.second.toInt()
+                        ), Vector2(32f, 32f), serverGameObjectData.gameObjectNum
+                    )
+
+                    GameObjectType.FIREBALL -> Fireball(
+                        gameObjectData = GameObjectData(
+                            x = serverGameObjectData.position.first.toInt(),
+                            y = serverGameObjectData.position.second.toInt()
+                        ),
+                        size = Vector2(60f, 30f),
+                        unitVectorDirection = Vector2(serverGameObjectData.unitVectorDirection),
+                        gameObjectNumber = serverGameObjectData.gameObjectNum
+                    )
                 }
                 gameObject.X0 = Vector2(serverGameObjectData.position.first, serverGameObjectData.position.second)
                 gameObject.X1 = Vector2(serverGameObjectData.position.first, serverGameObjectData.position.second)
@@ -72,20 +85,30 @@ class ClientStateManager {
 
         }
 
-        fun setObjectBasedOnData(gameObject: MoveableObject, serverGameObject: ServerGameObject){
+        fun setObjectBasedOnData(gameObject: MoveableObject, serverGameObject: ServerGameObject) {
             val serverGameObjectData = serverGameObject.serverGameObjectData
             gameObject.speed = serverGameObjectData.speed
-            gameObject.currentUnitVector = Vector2(serverGameObjectData.unitVectorDirection.first, serverGameObjectData.unitVectorDirection.second)
-            updateObjectFuture(Vector2(serverGameObjectData.position.first, serverGameObjectData.position.second), gameObject)
+            gameObject.currentUnitVector =
+                Vector2(serverGameObjectData.unitVectorDirection.first, serverGameObjectData.unitVectorDirection.second)
+            updateObjectFuture(
+                Vector2(serverGameObjectData.position.first, serverGameObjectData.position.second),
+                gameObject
+            )
             setIncrement(gameObject)
+            if (gameObject is Player) {
+                val customData = serverGameObject.customFields as CustomFields.PlayerCustomFields
+                gameObject.health = customData.playerHealth
+            }
         }
 
-        fun updateObjectFuture(X1: Vector2, moveableObject: MoveableObject){
+        fun updateObjectFuture(X1: Vector2, moveableObject: MoveableObject) {
             moveableObject.X1 = X1
             moveableObject.X0 = moveableObject.currentPosition()
         }
-        fun setIncrement(moveableObject: MoveableObject){
-            moveableObject.increment = Vector2((moveableObject.X1 - moveableObject.X0)/(stateUpdateTime.toFloat() / (Gdx.graphics.deltaTime * 1000)))
+
+        fun setIncrement(moveableObject: MoveableObject) {
+            moveableObject.increment =
+                Vector2((moveableObject.X1 - moveableObject.X0) / (stateUpdateTime.toFloat() / (Gdx.graphics.deltaTime * 1000)))
         }
     }
 }

@@ -1,9 +1,11 @@
 package com.example.game
 
 import com.mygdx.game.Action.TouchAction
+import com.mygdx.game.Models.CustomFields
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
+import kotlinx.serialization.modules.subclass
 
 object JsonConfig {
     val json: Json = Json {
@@ -12,6 +14,11 @@ object JsonConfig {
                 subclass(TouchAction.Move::class, TouchAction.Move.serializer())
                 subclass(TouchAction.FireAbility::class, TouchAction.FireAbility.serializer())
             }
+            polymorphic(CustomFields::class) {
+                subclass(CustomFields.EmptyCustomFields::class, CustomFields.EmptyCustomFields.serializer())
+                subclass(CustomFields.PlayerCustomFields::class, CustomFields.PlayerCustomFields.serializer())
+            }
+
         }
         classDiscriminator = "type"
     }

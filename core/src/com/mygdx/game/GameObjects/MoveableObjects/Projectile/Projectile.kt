@@ -15,6 +15,7 @@ abstract class Projectile(gameObjectData: GameObjectData, size: Vector2,open var
     override val collision = ProjectileCollision(this)
 
     override fun frameTask() {
+
         super.frameTask()
     }
 }

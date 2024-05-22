@@ -62,7 +62,7 @@ class NetworkingManager{
                 val packet = DatagramPacket(buffer, buffer.size)
                 listeningSocket.receive(packet)  // Receive a packet (blocking call)
                 val receivedText = String(packet.data, 0, packet.length).trim()
-                val packetData = Json.decodeFromString<GameState>(receivedText)
+                val packetData = JsonConfig.json.decodeFromString<GameState>(receivedText)
 
                 if(packetData.gameTime > newGameState.gameTime){
                     newGameState = packetData

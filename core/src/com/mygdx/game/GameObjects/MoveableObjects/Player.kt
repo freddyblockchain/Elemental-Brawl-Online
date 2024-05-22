@@ -1,6 +1,5 @@
 package com.mygdx.game.GameObjects.MoveableEntities.Characters
 
-import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector2
 import com.mygdx.game.Abilities.Ability
@@ -11,6 +10,7 @@ import com.mygdx.game.Enums.Direction
 import com.mygdx.game.Enums.Layer
 import com.mygdx.game.GameObjectData
 import com.mygdx.game.GameObjects.GameObject.MoveableObject
+import com.mygdx.game.GameObjects.GameObject.NormalFightableEntity
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -18,7 +18,7 @@ data class PlayerInitData(val sessionKey: String, val playerNum: Int)
 enum class PLAYER_STATUS {ALIVE, DEAD}
 
 class Player(gameObjectData: GameObjectData, size: Vector2, val playerNum: Int)
-    : MoveableObject(gameObjectData, size, playerNum){
+    : MoveableObject(gameObjectData, size, playerNum), NormalFightableEntity{
     override val texture = DefaultTextureHandler.getTexture("player.png")
     override var speed: Float = 20f
     override val cannotMoveStrategy = NoAction()
@@ -29,6 +29,8 @@ class Player(gameObjectData: GameObjectData, size: Vector2, val playerNum: Int)
     override val collision = CanMoveCollision()
     val abilities: MutableList<Ability> = mutableListOf()
     var status: PLAYER_STATUS = PLAYER_STATUS.ALIVE
+    override var health = 100f
+    override val maxHealth = 100f
 
     override fun frameTask() {
         super.frameTask()

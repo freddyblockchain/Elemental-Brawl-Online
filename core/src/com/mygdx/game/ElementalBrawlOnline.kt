@@ -40,6 +40,8 @@ var currentGameState = GameState(mutableListOf(), 0)
 var newGameState = GameState(mutableListOf(), 0)
 var currentPos = Vector2()
 
+val WINDOW_SCALE = 6
+
 var frameCounter = 3
 
 lateinit var playerStartPos: Vector2
@@ -57,7 +59,7 @@ class ElementalBrawlOnline : ApplicationAdapter() {
         inputProcessor = MyInputProcessor()
         Gdx.input.inputProcessor = inputProcessor
         camera = OrthographicCamera()
-        camera.setToOrtho(false, Gdx.graphics.width.toFloat() / 6, Gdx.graphics.height.toFloat() / 6)
+        camera.setToOrtho(false, Gdx.graphics.width.toFloat() / WINDOW_SCALE, Gdx.graphics.height.toFloat() / WINDOW_SCALE)
         mainMode = MainMode(inputProcessor)
         currentGameMode = mainMode
         shapeRenderer = ShapeRenderer()
