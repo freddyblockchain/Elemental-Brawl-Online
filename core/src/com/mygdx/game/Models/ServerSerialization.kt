@@ -22,3 +22,10 @@ sealed interface CustomFields{
 }
 @Serializable
 data class GameState(val objectStates: List<ServerGameObject>, val gameTime: Long)
+
+@Serializable
+data class SseEvent(
+    val id: String,
+    val event: String,
+    val data: GameState
+)

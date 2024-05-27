@@ -60,6 +60,8 @@ project(":core") {
         implementation "io.ktor:ktor-client-core:$ktor_version"
         implementation "io.ktor:ktor-client-okhttp:$ktor_version" // or any other engine you prefer
         implementation "io.ktor:ktor-client-cio:$ktor_version"
+        implementation 'com.squareup.okhttp3:okhttp:4.9.3'
+        implementation("com.squareup.okhttp3:okhttp-sse:4.9.3")
     }
 }
 

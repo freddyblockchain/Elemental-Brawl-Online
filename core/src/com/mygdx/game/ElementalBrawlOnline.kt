@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Polygon
 import com.badlogic.gdx.math.Vector2
+import com.example.game.IpifyResponse
 import com.mygdx.game.Action.TouchAction
 import com.mygdx.game.GameModes.GameMode
 import com.mygdx.game.GameModes.MainMode
@@ -30,12 +31,12 @@ import kotlinx.coroutines.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-var player: Player = Player(GameObjectData(), Vector2(0f,0f),-1)
+var player: Player = Player(GameObjectData(), Vector2(0f, 0f), -1)
 lateinit var currentGameMode: GameMode
 lateinit var mainMode: MainMode
 lateinit var sessionKey: String
 val playerActions = mutableListOf<TouchAction>()
-val players = mutableMapOf<Int,Player>()
+val players = mutableMapOf<Int, Player>()
 var currentGameState = GameState(mutableListOf(), 0)
 var newGameState = GameState(mutableListOf(), 0)
 var currentPos = Vector2()
@@ -47,6 +48,7 @@ var frameCounter = 3
 lateinit var playerStartPos: Vector2
 
 var camera: OrthographicCamera = OrthographicCamera()
+
 class ElementalBrawlOnline : ApplicationAdapter() {
 
     lateinit var inputProcessor: MyInputProcessor
@@ -59,23 +61,32 @@ class ElementalBrawlOnline : ApplicationAdapter() {
         inputProcessor = MyInputProcessor()
         Gdx.input.inputProcessor = inputProcessor
         camera = OrthographicCamera()
-        camera.setToOrtho(false, Gdx.graphics.width.toFloat() / WINDOW_SCALE, Gdx.graphics.height.toFloat() / WINDOW_SCALE)
+        camera.setToOrtho(
+            false,
+            Gdx.graphics.width.toFloat() / WINDOW_SCALE,
+            Gdx.graphics.height.toFloat() / WINDOW_SCALE
+        )
         mainMode = MainMode(inputProcessor)
         currentGameMode = mainMode
         shapeRenderer = ShapeRenderer()
         initObjects()
         DialogueManager.initSpeakableObjects()
-       // getArticyDraftEntries()
+        // getArticyDraftEntries()
         AreaManager.setActiveArea(AreaManager.areas[0].areaIdentifier)
         //val otherPlayer = Player(GameObjectData(x = 100, y = -100),  size = Vector2(64f,64f), 100)
-       // AreaManager.getActiveArea()!!.gameObjects.add(otherPlayer)
+        // AreaManager.getActiveArea()!!.gameObjects.add(otherPlayer)
 
-        val authorizationData = AuthorizationData("signed message", 10, "algo address", "fwqerwqeqw", NetworkingManager.localPort)
         runBlocking {
-           val response = httpClient.post("${NetworkingManager.serverAddress}:8080/authorize"){
+            val ipresponse = httpClient.get("https://api.ipify.org?format=json").bodyAsText()
+            val ipAddress = Json.decodeFromString<IpifyResponse>(ipresponse).ip
+
+            val authorizationData =
+                AuthorizationData("signed message", 10, "algo address", "fwqerwqeqw", NetworkingManager.localPort, ipAddress)
+            val response = httpClient.post("${NetworkingManager.serverAddress}:8080/authorize") {
                 contentType(ContentType.Application.Json)
                 setBody(Json.encodeToString(authorizationData))
             }
+            println(ipAddress)
             // Init player
             val playerInitData = Json.decodeFromString<PlayerInitData>(response.bodyAsText())
             sessionKey = playerInitData.sessionKey
@@ -84,27 +95,36 @@ class ElementalBrawlOnline : ApplicationAdapter() {
             players[playerInitData.playerNum] = player
             AreaManager.getActiveArea()!!.gameObjects.add(player)
         }
-        val receiveInputScope = CoroutineScope(Dispatchers.IO)
-        receiveInputScope.launch {
-            receiveGameStateFromServer()
-        }
+        //it does its own coruoutine shit appearently
+        receiveGameStateFromServer()
     }
 
     override fun render() {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT or GL20.GL_DEPTH_BUFFER_BIT)
         val moveableObjects = AreaManager.getActiveArea()!!.gameObjects.filterIsInstance<MoveableObject>()
+        val playerPrev = player.currentPosition()
         moveableObjects.forEach {
-            currentPos = getInterpolatedPosition(ClientStateManager.T0, ClientStateManager.T1, it.X0, it.X1, System.currentTimeMillis() - ClientStateManager.startTime)
+            currentPos = getInterpolatedPosition(
+                ClientStateManager.T0,
+                ClientStateManager.T1,
+                it.X0,
+                it.X1,
+                System.currentTimeMillis() - ClientStateManager.startTime
+            )
             it.setPosition(currentPos)
         }
-        if(newGameState != currentGameState){
+        val playerNew = player.currentPosition()
+        println("distance is: " + distance(playerPrev, playerNew))
+        if (newGameState != currentGameState) {
             currentGameState = newGameState
             ClientStateManager.serverUpdateState(currentGameState)
 
             //do it halfway through the frame
-        }else if (newGameState == currentGameState && (System.currentTimeMillis() - ClientStateManager.startTime ) >= ((ClientStateManager.T1 - ClientStateManager.T0) - ((Gdx.graphics.deltaTime * 1000) / 2).toLong())){
+        } else if (newGameState == currentGameState && (System.currentTimeMillis() - ClientStateManager.startTime) >= ((ClientStateManager.T1 - ClientStateManager.T0) - ((Gdx.graphics.deltaTime * 1000) / 2).toLong())) {
             ClientStateManager.clientUpdateState()
-            ClientStateManager.updateObjectFuture(player.X1 + player.increment, player)
+            moveableObjects.forEach {
+                ClientStateManager.updateObjectFuture(it.X1 + it.increment, it)
+            }
         }
 
         currentGameMode.spriteBatch.projectionMatrix = camera.combined
@@ -126,7 +146,7 @@ class ElementalBrawlOnline : ApplicationAdapter() {
         AreaManager.getActiveArea()!!.gameObjects.forEach { x -> drawPolygonShape(x.polygon, shapeRenderer) }
     }
 
-    fun drawPolygonShape(polygon: Polygon, shapeRenderer: ShapeRenderer){
+    fun drawPolygonShape(polygon: Polygon, shapeRenderer: ShapeRenderer) {
         shapeRenderer.projectionMatrix = camera.combined
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line)
         shapeRenderer.polygon(polygon.transformedVertices)

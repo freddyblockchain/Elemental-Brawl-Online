@@ -8,5 +8,6 @@ data class AuthorizationData(
     val roundNrSigned: Long,   // The blockchain round number
     val algorandAddress: String, // The Algorand address of the signer
     val roundSeed: String,
-    val localPort: Int
+    val localPort: Int,
+    val ipAddress: String
 )
