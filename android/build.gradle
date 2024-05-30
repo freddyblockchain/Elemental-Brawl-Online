@@ -14,15 +14,25 @@ android {
         }
 
     }
+
+    dependencies {
+        implementation "androidx.security:security-crypto:1.1.0-alpha06"
+        implementation 'org.bouncycastle:bcprov-jdk15to18:1.70'
+    }
     packagingOptions {
         exclude 'META-INF/robovm/ios/robovm.xml'
     }
     defaultConfig {
         applicationId "com.mygdx.game"
-        minSdkVersion 19
+        minSdkVersion 21
+        multiDexEnabled = true;
         targetSdkVersion 33
         versionCode 1
         versionName "1.0"
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     buildTypes {
         release {

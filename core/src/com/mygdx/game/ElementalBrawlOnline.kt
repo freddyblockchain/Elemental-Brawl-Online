@@ -1,6 +1,7 @@
 package com.mygdx.game
 
 import FontManager
+import com.algorand.algosdk.account.Account
 import com.badlogic.gdx.ApplicationAdapter
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.GL20
@@ -8,8 +9,8 @@ import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Polygon
 import com.badlogic.gdx.math.Vector2
-import com.example.game.IpifyResponse
 import com.mygdx.game.Action.TouchAction
+import com.mygdx.game.Algorand.EBOSecurePreferences
 import com.mygdx.game.GameModes.GameMode
 import com.mygdx.game.GameModes.MainMode
 import com.mygdx.game.GameObjects.GameObject.MoveableObject
@@ -49,7 +50,7 @@ lateinit var playerStartPos: Vector2
 
 var camera: OrthographicCamera = OrthographicCamera()
 
-class ElementalBrawlOnline : ApplicationAdapter() {
+class ElementalBrawlOnline(val securePreferences: EBOSecurePreferences) : ApplicationAdapter() {
 
     lateinit var inputProcessor: MyInputProcessor
     lateinit var shapeRenderer: ShapeRenderer
@@ -57,6 +58,7 @@ class ElementalBrawlOnline : ApplicationAdapter() {
         initMappings()
         initAreas()
         FontManager.initFonts()
+        Gdx.gl.glLineWidth(5f)
 
         inputProcessor = MyInputProcessor()
         Gdx.input.inputProcessor = inputProcessor
@@ -77,16 +79,22 @@ class ElementalBrawlOnline : ApplicationAdapter() {
         // AreaManager.getActiveArea()!!.gameObjects.add(otherPlayer)
 
         runBlocking {
-            val ipresponse = httpClient.get("https://api.ipify.org?format=json").bodyAsText()
-            val ipAddress = Json.decodeFromString<IpifyResponse>(ipresponse).ip
+            //get address
+            val storedAddress = securePreferences.getString("EBOAccount", "")
+            if(storedAddress == ""){
+                val acct: Account = Account()
 
+                securePreferences.putString("EBOAccount", acct.toMnemonic())
+            }
+            val myValue = securePreferences.getString("EBOAccount", "")
+            println(myValue)
             val authorizationData =
-                AuthorizationData("signed message", 10, "algo address", "fwqerwqeqw", NetworkingManager.localPort, ipAddress)
+                AuthorizationData("signed message", 10, "algo address", "fwqerwqeqw", NetworkingManager.localPort)
             val response = httpClient.post("${NetworkingManager.serverAddress}:8080/authorize") {
                 contentType(ContentType.Application.Json)
                 setBody(Json.encodeToString(authorizationData))
             }
-            println(ipAddress)
+
             // Init player
             val playerInitData = Json.decodeFromString<PlayerInitData>(response.bodyAsText())
             sessionKey = playerInitData.sessionKey
@@ -131,7 +139,7 @@ class ElementalBrawlOnline : ApplicationAdapter() {
         RenderGraph.render(currentGameMode.spriteBatch)
         //AnimationManager.addAnimationsToRender()
         currentGameMode.FrameAction()
-        drawrects()
+        //drawrects()
         camera.position.set(player.sprite.x, player.sprite.y, 0f)
         camera.update()
         sendMessageToServer()

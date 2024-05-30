@@ -7,6 +7,8 @@ import com.mygdx.game.Enums.Direction
 import com.mygdx.game.Enums.Layer
 import com.mygdx.game.Enums.getDirectionFromUnitVector
 import com.mygdx.game.GameObjectData
+import com.mygdx.game.GameObjects.GameObject.GameObject
+import com.mygdx.game.GameObjects.MoveableEntities.Characters.Player
 
 
 class Fireball(gameObjectData: GameObjectData, size: Vector2, unitVectorDirection: Vector2, gameObjectNumber: Int) : Projectile(gameObjectData, size, unitVectorDirection, gameObjectNumber) {

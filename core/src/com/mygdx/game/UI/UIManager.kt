@@ -20,6 +20,9 @@ class UIManager {
                 it.render(UISpriteBatch)
             }
             UISpriteBatch.end()
+            abilityButtons.forEach {
+                it.renderButton()
+            }
         }
     }
 }

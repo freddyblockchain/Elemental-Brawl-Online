@@ -66,6 +66,7 @@ class MyInputProcessor : InputProcessor {
                         touchPoint
                     )
                 ) {
+                    ability.active = true
                     ability.onPress()
                     abilityClicked = true
                 }

@@ -9,5 +9,4 @@ data class AuthorizationData(
     val algorandAddress: String, // The Algorand address of the signer
     val roundSeed: String,
     val localPort: Int,
-    val ipAddress: String
 )
