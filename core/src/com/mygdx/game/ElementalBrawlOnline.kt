@@ -42,7 +42,7 @@ var currentGameState = GameState(mutableListOf(), 0)
 var newGameState = GameState(mutableListOf(), 0)
 var currentPos = Vector2()
 
-val WINDOW_SCALE = 6
+val WINDOW_SCALE = 5
 
 var frameCounter = 3
 
@@ -122,7 +122,6 @@ class ElementalBrawlOnline(val securePreferences: EBOSecurePreferences) : Applic
             it.setPosition(currentPos)
         }
         val playerNew = player.currentPosition()
-        println("distance is: " + distance(playerPrev, playerNew))
         if (newGameState != currentGameState) {
             currentGameState = newGameState
             ClientStateManager.serverUpdateState(currentGameState)

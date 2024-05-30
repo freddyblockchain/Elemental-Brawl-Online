@@ -58,14 +58,16 @@ class MyInputProcessor : InputProcessor {
 
         if (AbilityManager.availableAbilities.any { it.pressed }) {
             val activeAbility = AbilityManager.availableAbilities.first { it.pressed }
-            activeAbility.onActivate(Vector2(worldCoords.x, worldCoords.y))
+            activeAbility.tryActivate(Vector2(worldCoords.x, worldCoords.y))
             abilityActivated = true
         } else {
             for (ability in UIManager.abilityButtons) {
                 if (ability.sprite.boundingRectangle.contains(
                         touchPoint
                     )
+                    && ability.cooldownTimer.cooldownAvailable()
                 ) {
+                    println("pressed!")
                     ability.active = true
                     ability.onPress()
                     abilityClicked = true

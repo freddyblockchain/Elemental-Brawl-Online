@@ -4,11 +4,10 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
-import com.badlogic.gdx.math.Rectangle
-import com.badlogic.gdx.math.Vector2
+import com.mygdx.game.Timer.CooldownTimer
 import com.mygdx.game.UI.UIManager.Companion.uiShapeRenderer
 
-class AbilityButton(override val sprite: Sprite, override val onPress: () -> Unit) : UIElement {
+class AbilityButton(override val sprite: Sprite, val cooldownTimer: CooldownTimer, override val onPress: () -> Unit) : UIElement {
 
     override var active = false
     init {
@@ -17,13 +16,20 @@ class AbilityButton(override val sprite: Sprite, override val onPress: () -> Uni
     }
 
     fun render(UIbatch: SpriteBatch) {
+        if(cooldownTimer.cooldownAvailable()){
+            sprite.setAlpha(1f)
+        }else{
+            sprite.setAlpha(0.5f)
+        }
         sprite.draw(UIbatch)
     }
     fun renderButton(){
         // Draw border around the sprite
-        uiShapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        uiShapeRenderer.color = if(active) Color.GREEN else Color.WHITE
-        uiShapeRenderer.rect(sprite.getX(), sprite.getY(), sprite.getWidth(), sprite.getHeight());
-        uiShapeRenderer.end();
+        if(active){
+            uiShapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+            uiShapeRenderer.color = Color.GREEN
+            uiShapeRenderer.rect(sprite.getX(), sprite.getY(), sprite.getWidth(), sprite.getHeight());
+            uiShapeRenderer.end();
+        }
     }
 }

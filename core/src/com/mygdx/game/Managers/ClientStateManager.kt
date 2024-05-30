@@ -46,7 +46,6 @@ class ClientStateManager {
             val existingObjects = AreaManager.getActiveArea()!!.gameObjects.filterIsInstance<MoveableObject>()
             existingObjects.forEach {
                 if (it.gameObjectNumber !in serverGameObjectNumbers) {
-                    println("Removed an object!")
                     AreaManager.getActiveArea()!!.gameObjects.remove(it)
                 }
             }

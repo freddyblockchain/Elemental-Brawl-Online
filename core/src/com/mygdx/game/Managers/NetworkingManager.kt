@@ -81,7 +81,6 @@ class NetworkingManager{
                     }
 
                     override fun onEvent(eventSource: EventSource, id: String?, type: String?, data: String) {
-                        println("Event received. Changing state!")
                         val sseEvent = JsonConfig.json.decodeFromString<SseEvent>(data)
                         val receivedGameState = sseEvent.data
                         if(receivedGameState.gameTime > newGameState.gameTime){

@@ -3,6 +3,7 @@ package com.mygdx.game.UI
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
+import com.mygdx.game.Abilities.AbilityManager
 import com.mygdx.game.Abilities.AbilityManager.Companion.fireballAbility
 import com.mygdx.game.DefaultTextureHandler
 
@@ -12,7 +13,8 @@ class UIManager {
         var UISpriteBatch = SpriteBatch()
         val uiShapeRenderer = ShapeRenderer()
         init {
-            abilityButtons.add(AbilityButton(Sprite(DefaultTextureHandler.getTexture("fireball.png"))) { fireballAbility.onPress()})
+            val fireballAbilityTimer = fireballAbility.timer
+            abilityButtons.add(AbilityButton(Sprite(DefaultTextureHandler.getTexture("fireball.png")), fireballAbilityTimer) { fireballAbility.onPress()})
         }
         fun render(){
             UISpriteBatch.begin()
