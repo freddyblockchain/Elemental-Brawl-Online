@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Polygon
 import com.badlogic.gdx.math.Vector2
+import com.mygdx.game.Abilities.AbilityManager
+import com.mygdx.game.Abilities.FireballAbility
 import com.mygdx.game.Action.TouchAction
 import com.mygdx.game.Algorand.EBOSecurePreferences
 import com.mygdx.game.GameModes.GameMode
@@ -16,6 +18,7 @@ import com.mygdx.game.GameModes.MainMode
 import com.mygdx.game.GameObjects.GameObject.MoveableObject
 import com.mygdx.game.GameObjects.MoveableEntities.Characters.Player
 import com.mygdx.game.GameObjects.MoveableEntities.Characters.PlayerInitData
+import com.mygdx.game.GameObjects.Shop.ShopItem
 import com.mygdx.game.Input.MyInputProcessor
 import com.mygdx.game.Managers.*
 import com.mygdx.game.Managers.NetworkingManager.Companion.receiveGameStateFromServer
@@ -102,6 +105,10 @@ class ElementalBrawlOnline(val securePreferences: EBOSecurePreferences) : Applic
             playerStartPos = player.initPosition
             players[playerInitData.playerNum] = player
             AreaManager.getActiveArea()!!.gameObjects.add(player)
+
+            val shopItemPosition = Vector2(player.currentPosition() + Vector2(100f,100f))
+            val shopItem = ShopItem(GameObjectData(x = 200, y = 0), Vector2(32f,32f), AbilityManager.fireballAbility)
+            AreaManager.getActiveArea()!!.gameObjects.add(shopItem)
         }
         //it does its own coruoutine shit appearently
         receiveGameStateFromServer()

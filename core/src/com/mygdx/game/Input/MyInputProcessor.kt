@@ -10,6 +10,7 @@ import com.mygdx.game.Abilities.AbilityManager
 import com.mygdx.game.Action.TouchAction
 import com.mygdx.game.Enums.Direction
 import com.mygdx.game.Enums.getDirectionUnitVector
+import com.mygdx.game.UI.AbilityButton
 import com.mygdx.game.UI.UIManager
 
 
@@ -61,7 +62,7 @@ class MyInputProcessor : InputProcessor {
             activeAbility.tryActivate(Vector2(worldCoords.x, worldCoords.y))
             abilityActivated = true
         } else {
-            for (ability in UIManager.abilityButtons) {
+            for (ability in UIManager.uiElements.filterIsInstance<AbilityButton>()) {
                 if (ability.sprite.boundingRectangle.contains(
                         touchPoint
                     )

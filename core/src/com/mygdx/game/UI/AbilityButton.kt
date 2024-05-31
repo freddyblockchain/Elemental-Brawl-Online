@@ -4,18 +4,20 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
+import com.mygdx.game.Abilities.Ability
 import com.mygdx.game.Timer.CooldownTimer
 import com.mygdx.game.UI.UIManager.Companion.uiShapeRenderer
 
-class AbilityButton(override val sprite: Sprite, val cooldownTimer: CooldownTimer, override val onPress: () -> Unit) : UIElement {
-
+class AbilityButton(val ability: Ability, override val onPress: () -> Unit) : UIElement {
+    val cooldownTimer = ability.timer
+    val sprite = Sprite(ability.tooltipPicture)
     override var active = false
     init {
         sprite.setSize(200f, 200f)
         sprite.setPosition(Gdx.graphics.width - 250f, 100f)
     }
 
-    fun render(UIbatch: SpriteBatch) {
+    override fun render(UIbatch: SpriteBatch) {
         if(cooldownTimer.cooldownAvailable()){
             sprite.setAlpha(1f)
         }else{
@@ -23,8 +25,8 @@ class AbilityButton(override val sprite: Sprite, val cooldownTimer: CooldownTime
         }
         sprite.draw(UIbatch)
     }
-    fun renderButton(){
-        // Draw border around the sprite
+
+    override fun renderShape() {
         if(active){
             uiShapeRenderer.begin(ShapeRenderer.ShapeType.Line);
             uiShapeRenderer.color = Color.GREEN
@@ -32,4 +34,5 @@ class AbilityButton(override val sprite: Sprite, val cooldownTimer: CooldownTime
             uiShapeRenderer.end();
         }
     }
+
 }
