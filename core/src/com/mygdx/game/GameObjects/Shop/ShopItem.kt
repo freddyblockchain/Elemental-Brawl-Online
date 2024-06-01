@@ -18,7 +18,6 @@ import com.mygdx.game.player
 
 class ShopItem(gameObjectData: GameObjectData, size: Vector2, val ability: Ability) : GameObject(gameObjectData, size) {
     override val texture = ability.tooltipPicture
-    val pos = this.topleft
     val buyButton = BuyButton(this, ability.price)
 
     init {

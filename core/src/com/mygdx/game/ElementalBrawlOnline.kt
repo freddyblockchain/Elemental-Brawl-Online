@@ -106,7 +106,6 @@ class ElementalBrawlOnline(val securePreferences: EBOSecurePreferences) : Applic
             players[playerInitData.playerNum] = player
             AreaManager.getActiveArea()!!.gameObjects.add(player)
 
-            val shopItemPosition = Vector2(player.currentPosition() + Vector2(100f,100f))
             val shopItem = ShopItem(GameObjectData(x = 200, y = 0), Vector2(32f,32f), AbilityManager.fireballAbility)
             AreaManager.getActiveArea()!!.gameObjects.add(shopItem)
         }
@@ -117,7 +116,6 @@ class ElementalBrawlOnline(val securePreferences: EBOSecurePreferences) : Applic
     override fun render() {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT or GL20.GL_DEPTH_BUFFER_BIT)
         val moveableObjects = AreaManager.getActiveArea()!!.gameObjects.filterIsInstance<MoveableObject>()
-        val playerPrev = player.currentPosition()
         moveableObjects.forEach {
             currentPos = getInterpolatedPosition(
                 ClientStateManager.T0,
@@ -145,7 +143,7 @@ class ElementalBrawlOnline(val securePreferences: EBOSecurePreferences) : Applic
         RenderGraph.render(currentGameMode.spriteBatch)
         //AnimationManager.addAnimationsToRender()
         currentGameMode.FrameAction()
-        //drawrects()
+       // drawrects()
         camera.position.set(player.sprite.x, player.sprite.y, 0f)
         camera.update()
         sendMessageToServer()

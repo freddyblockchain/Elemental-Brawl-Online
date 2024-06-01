@@ -8,13 +8,13 @@ import com.mygdx.game.Abilities.Ability
 import com.mygdx.game.Timer.CooldownTimer
 import com.mygdx.game.UI.UIManager.Companion.uiShapeRenderer
 
-class AbilityButton(val ability: Ability, override val onPress: () -> Unit) : UIElement {
+class AbilityButton(val ability: Ability, val abilityOnPress: () -> Unit) : UIElement {
     val cooldownTimer = ability.timer
-    val sprite = Sprite(ability.tooltipPicture)
+    override val sprite = Sprite(ability.tooltipPicture)
     override var active = false
     init {
         sprite.setSize(200f, 200f)
-        sprite.setPosition(Gdx.graphics.width - 250f, 100f)
+        sprite.setPosition(Gdx.graphics.width - 250f, 200f)
     }
 
     override fun render(UIbatch: SpriteBatch) {
@@ -24,6 +24,16 @@ class AbilityButton(val ability: Ability, override val onPress: () -> Unit) : UI
             sprite.setAlpha(0.5f)
         }
         sprite.draw(UIbatch)
+    }
+
+    override fun onPress(): Boolean {
+        if(this.cooldownTimer.cooldownAvailable()){
+            println("pressed!")
+            this.active = true
+            abilityOnPress()
+            return true
+        }
+        return false
     }
 
     override fun renderShape() {

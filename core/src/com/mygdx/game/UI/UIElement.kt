@@ -5,8 +5,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Rectangle
 
 interface UIElement {
-    val onPress: () -> Unit
+    fun onPress(): Boolean
     var active: Boolean
+    val sprite: Sprite
     fun renderShape(): Unit
     fun render(batch: SpriteBatch): Unit
 }

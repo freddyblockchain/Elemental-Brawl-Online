@@ -14,11 +14,11 @@ class UIManager {
         }
         fun render(){
             UISpriteBatch.begin()
-            uiElements.forEach {
+            uiElements.toMutableList().forEach {
                 it.render(UISpriteBatch)
             }
             UISpriteBatch.end()
-            uiElements.forEach {
+            uiElements.toMutableList().forEach {
                 it.renderShape()
             }
         }

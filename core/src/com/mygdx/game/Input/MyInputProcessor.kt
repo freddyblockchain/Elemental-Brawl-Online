@@ -10,7 +10,6 @@ import com.mygdx.game.Abilities.AbilityManager
 import com.mygdx.game.Action.TouchAction
 import com.mygdx.game.Enums.Direction
 import com.mygdx.game.Enums.getDirectionUnitVector
-import com.mygdx.game.UI.AbilityButton
 import com.mygdx.game.UI.UIManager
 
 
@@ -49,7 +48,7 @@ class MyInputProcessor : InputProcessor {
 
     override fun touchDown(x: Int, y: Int, pointer: Int, button: Int): Boolean {
         // val point =
-        var abilityClicked = false
+        var uiActionHappened = false
         var abilityActivated = false
         val touchPoint = Vector2(
             x.toFloat(),
@@ -62,21 +61,17 @@ class MyInputProcessor : InputProcessor {
             activeAbility.tryActivate(Vector2(worldCoords.x, worldCoords.y))
             abilityActivated = true
         } else {
-            for (ability in UIManager.uiElements.filterIsInstance<AbilityButton>()) {
-                if (ability.sprite.boundingRectangle.contains(
+            for (uiElement in UIManager.uiElements.toMutableList()) {
+                if (uiElement.sprite.boundingRectangle.contains(
                         touchPoint
                     )
-                    && ability.cooldownTimer.cooldownAvailable()
                 ) {
-                    println("pressed!")
-                    ability.active = true
-                    ability.onPress()
-                    abilityClicked = true
+                    uiActionHappened = uiActionHappened || uiElement.onPress()
                 }
             }
         }
 
-        if (!abilityClicked && !abilityActivated) {
+        if (!uiActionHappened && !abilityActivated) {
             val touchAction = TouchAction.Move(Pair(worldCoords.x, worldCoords.y))
             playerActions.add(touchAction)
         }
