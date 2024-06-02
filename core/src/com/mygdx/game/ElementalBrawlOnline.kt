@@ -10,8 +10,8 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Polygon
 import com.badlogic.gdx.math.Vector2
 import com.mygdx.game.Abilities.AbilityManager
-import com.mygdx.game.Abilities.FireballAbility
 import com.mygdx.game.Action.TouchAction
+import com.mygdx.game.Algorand.AlgorandManager
 import com.mygdx.game.Algorand.EBOSecurePreferences
 import com.mygdx.game.GameModes.GameMode
 import com.mygdx.game.GameModes.MainMode
@@ -84,18 +84,29 @@ class ElementalBrawlOnline(val securePreferences: EBOSecurePreferences) : Applic
         runBlocking {
             //get address
             val storedAddress = securePreferences.getString("EBOAccount", "")
+            var newPlayer = false
             if(storedAddress == ""){
                 val acct: Account = Account()
-
+                newPlayer = true
                 securePreferences.putString("EBOAccount", acct.toMnemonic())
             }
             val myValue = securePreferences.getString("EBOAccount", "")
-            println(myValue)
+            val account = Account(myValue)
+            println("Address is: " + account.address.toString())
             val authorizationData =
-                AuthorizationData("signed message", 10, "algo address", "fwqerwqeqw", NetworkingManager.localPort)
+                AuthorizationData("signed message", 10, account.address.toString(), "fwqerwqeqw", NetworkingManager.localPort)
             val response = httpClient.post("${NetworkingManager.serverAddress}:8080/authorize") {
                 contentType(ContentType.Application.Json)
                 setBody(Json.encodeToString(authorizationData))
+            }
+
+            //Give players one gold to be able to buy the fireball in the game.
+            if(newPlayer){
+                AlgorandManager.optIntoGameAssets()
+                launch {
+                    delay(5000)
+                    httpClient.post("${NetworkingManager.serverAddress}:8080/request-starting-gold")
+                }
             }
 
             // Init player
@@ -109,7 +120,6 @@ class ElementalBrawlOnline(val securePreferences: EBOSecurePreferences) : Applic
             val shopItem = ShopItem(GameObjectData(x = 200, y = 0), Vector2(32f,32f), AbilityManager.fireballAbility)
             AreaManager.getActiveArea()!!.gameObjects.add(shopItem)
         }
-        //it does its own coruoutine shit appearently
         receiveGameStateFromServer()
     }
 
