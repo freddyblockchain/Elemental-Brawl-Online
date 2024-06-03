@@ -2,7 +2,7 @@ package com.mygdx.game.Managers
 
 import com.badlogic.gdx.Gdx
 import com.example.game.JsonConfig
-import com.mygdx.game.Action.TouchAction
+import com.mygdx.game.Action.PlayerAction
 import com.mygdx.game.Models.SseEvent
 import com.mygdx.game.newGameState
 import com.mygdx.game.playerActions
@@ -22,7 +22,7 @@ import java.net.InetSocketAddress
 
 
 @Serializable
-data class UdpPacket(val action: TouchAction, val sessionKey: String)
+data class UdpPacket(val action: PlayerAction, val sessionKey: String)
 class NetworkingManager{
     companion object {
         val localAddress = "192.168.87.147"

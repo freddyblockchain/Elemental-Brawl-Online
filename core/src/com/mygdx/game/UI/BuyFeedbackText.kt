@@ -10,11 +10,8 @@ import com.mygdx.game.WINDOW_SCALE
 import com.mygdx.game.camera
 
 class BuyFeedbackText(): UIElement {
-
     val pos = Vector2(Gdx.graphics.width / 2f,Gdx.graphics.height / 2f)
-
     override val sprite = Sprite()
-
     val text = "Buying..."
 
     override fun onPress(): Boolean {
@@ -28,7 +25,7 @@ class BuyFeedbackText(): UIElement {
     }
 
     override fun render(batch: SpriteBatch) {
-        FontManager.NormalTextFont.draw(batch, text, pos.y, pos.y)
+        FontManager.NormalTextFont.draw(batch, text, pos.x, pos.y)
     }
 
 }

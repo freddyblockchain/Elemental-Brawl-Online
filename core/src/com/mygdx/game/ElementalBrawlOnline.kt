@@ -10,8 +10,9 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Polygon
 import com.badlogic.gdx.math.Vector2
 import com.mygdx.game.Abilities.AbilityManager
-import com.mygdx.game.Action.TouchAction
+import com.mygdx.game.Action.PlayerAction
 import com.mygdx.game.Algorand.AlgorandManager
+import com.mygdx.game.Algorand.AlgorandManager.Companion.updateGoldCount
 import com.mygdx.game.Algorand.EBOSecurePreferences
 import com.mygdx.game.GameModes.GameMode
 import com.mygdx.game.GameModes.MainMode
@@ -26,6 +27,7 @@ import com.mygdx.game.Managers.NetworkingManager.Companion.sendMessageToServer
 import com.mygdx.game.Models.GameState
 import com.mygdx.game.ServerTraffic.Models.AuthorizationData
 import com.mygdx.game.ServerTraffic.httpClient
+import com.mygdx.game.UI.GoldText
 import com.mygdx.game.UI.UIManager
 import com.mygdx.game.Utils.RenderGraph
 import io.ktor.client.request.*
@@ -39,7 +41,7 @@ var player: Player = Player(GameObjectData(), Vector2(0f, 0f), -1)
 lateinit var currentGameMode: GameMode
 lateinit var mainMode: MainMode
 lateinit var sessionKey: String
-val playerActions = mutableListOf<TouchAction>()
+val playerActions = mutableListOf<PlayerAction>()
 val players = mutableMapOf<Int, Player>()
 var currentGameState = GameState(mutableListOf(), 0)
 var newGameState = GameState(mutableListOf(), 0)
@@ -57,6 +59,7 @@ class ElementalBrawlOnline(val securePreferences: EBOSecurePreferences) : Applic
 
     lateinit var inputProcessor: MyInputProcessor
     lateinit var shapeRenderer: ShapeRenderer
+    val EBOStorageName = "EBOAccount14"
     override fun create() {
         initMappings()
         initAreas()
@@ -83,30 +86,36 @@ class ElementalBrawlOnline(val securePreferences: EBOSecurePreferences) : Applic
 
         runBlocking {
             //get address
-            val storedAddress = securePreferences.getString("EBOAccount", "")
+            val storedAddress = securePreferences.getString(EBOStorageName, "")
             var newPlayer = false
             if(storedAddress == ""){
                 val acct: Account = Account()
                 newPlayer = true
-                securePreferences.putString("EBOAccount", acct.toMnemonic())
+                securePreferences.putString(EBOStorageName, acct.toMnemonic())
             }
-            val myValue = securePreferences.getString("EBOAccount", "")
-            val account = Account(myValue)
-            println("Address is: " + account.address.toString())
+            val myValue = securePreferences.getString(EBOStorageName, "")
+            AlgorandManager.playerAccount = Account(myValue)
+            println("address is: " + AlgorandManager.playerAccount.address.toString())
             val authorizationData =
-                AuthorizationData("signed message", 10, account.address.toString(), "fwqerwqeqw", NetworkingManager.localPort)
+                AuthorizationData("signed message", 10, AlgorandManager.playerAccount.address.toString(), "fwqerwqeqw", NetworkingManager.localPort)
             val response = httpClient.post("${NetworkingManager.serverAddress}:8080/authorize") {
                 contentType(ContentType.Application.Json)
                 setBody(Json.encodeToString(authorizationData))
             }
-
-            //Give players one gold to be able to buy the fireball in the game.
+            GoldText.loading = true
             if(newPlayer){
-                AlgorandManager.optIntoGameAssets()
-                launch {
+                val coroutineScope = CoroutineScope(Dispatchers.Default)
+                coroutineScope.launch {
+                    //Wait for algo to come from the server
                     delay(5000)
-                    httpClient.post("${NetworkingManager.serverAddress}:8080/request-starting-gold")
+                    AlgorandManager.optIntoAssets()
+                    println("opted into new accounts")
+                    //Wait for server to send starting gold to this account
+                    AlgorandManager.updateGoldCount(15000)
+                    println("updatedGold")
                 }
+            } else {
+                updateGoldCount(0L)
             }
 
             // Init player

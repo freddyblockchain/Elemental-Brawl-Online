@@ -46,7 +46,6 @@ class BuyButton(val shopItem: ShopItem,val amount: Int): UIElement {
 
     override fun onPress(): Boolean {
         if(Inventory.gold >= amount && active){
-            println("you actually here?")
             UIManager.uiElements.add(BuyFeedbackText())
             return true
         }
