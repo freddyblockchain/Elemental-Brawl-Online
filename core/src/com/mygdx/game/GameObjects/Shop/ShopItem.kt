@@ -32,6 +32,8 @@ class ShopItem(gameObjectData: GameObjectData, size: Vector2, val ability: Abili
         super.frameTask()
         //Only check collision of player
         CollitionManager.handleMoveCollisions(this, this.polygon, listOf(player))
+
+        //Remove ability from shop if player has it
     }
 }
 

@@ -10,6 +10,7 @@ class UIManager {
         var UISpriteBatch = SpriteBatch()
         val uiShapeRenderer = ShapeRenderer()
         init {
+            uiElements.add(BuyingText)
             uiElements.add(AbilityButton(fireballAbility) { fireballAbility.onPress()})
             uiElements.add(GoldText)
         }

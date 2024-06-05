@@ -9,17 +9,16 @@ import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Polygon
 import com.badlogic.gdx.math.Vector2
-import com.mygdx.game.Abilities.AbilityManager
 import com.mygdx.game.Action.PlayerAction
 import com.mygdx.game.Algorand.AlgorandManager
-import com.mygdx.game.Algorand.AlgorandManager.Companion.updateGoldCount
+import com.mygdx.game.Algorand.AlgorandManager.Companion.updatePlayerState
 import com.mygdx.game.Algorand.EBOSecurePreferences
 import com.mygdx.game.GameModes.GameMode
 import com.mygdx.game.GameModes.MainMode
 import com.mygdx.game.GameObjects.GameObject.MoveableObject
 import com.mygdx.game.GameObjects.MoveableEntities.Characters.Player
 import com.mygdx.game.GameObjects.MoveableEntities.Characters.PlayerInitData
-import com.mygdx.game.GameObjects.Shop.ShopItem
+import com.mygdx.game.GameObjects.Shop.ShopManager
 import com.mygdx.game.Input.MyInputProcessor
 import com.mygdx.game.Managers.*
 import com.mygdx.game.Managers.NetworkingManager.Companion.receiveGameStateFromServer
@@ -59,8 +58,11 @@ class ElementalBrawlOnline(val securePreferences: EBOSecurePreferences) : Applic
 
     lateinit var inputProcessor: MyInputProcessor
     lateinit var shapeRenderer: ShapeRenderer
-    val EBOStorageName = "EBOAccount14"
+    val EBOStorageName = "EBOAccount21"
     override fun create() {
+        CoroutineScope(Dispatchers.Default).launch {
+            ShopManager.initShop()
+        }
         initMappings()
         initAreas()
         FontManager.initFonts()
@@ -81,8 +83,6 @@ class ElementalBrawlOnline(val securePreferences: EBOSecurePreferences) : Applic
         DialogueManager.initSpeakableObjects()
         // getArticyDraftEntries()
         AreaManager.setActiveArea(AreaManager.areas[0].areaIdentifier)
-        //val otherPlayer = Player(GameObjectData(x = 100, y = -100),  size = Vector2(64f,64f), 100)
-        // AreaManager.getActiveArea()!!.gameObjects.add(otherPlayer)
 
         runBlocking {
             //get address
@@ -103,20 +103,6 @@ class ElementalBrawlOnline(val securePreferences: EBOSecurePreferences) : Applic
                 setBody(Json.encodeToString(authorizationData))
             }
             GoldText.loading = true
-            if(newPlayer){
-                val coroutineScope = CoroutineScope(Dispatchers.Default)
-                coroutineScope.launch {
-                    //Wait for algo to come from the server
-                    delay(5000)
-                    AlgorandManager.optIntoAssets()
-                    println("opted into new accounts")
-                    //Wait for server to send starting gold to this account
-                    AlgorandManager.updateGoldCount(15000)
-                    println("updatedGold")
-                }
-            } else {
-                updateGoldCount(0L)
-            }
 
             // Init player
             val playerInitData = Json.decodeFromString<PlayerInitData>(response.bodyAsText())
@@ -126,8 +112,22 @@ class ElementalBrawlOnline(val securePreferences: EBOSecurePreferences) : Applic
             players[playerInitData.playerNum] = player
             AreaManager.getActiveArea()!!.gameObjects.add(player)
 
-            val shopItem = ShopItem(GameObjectData(x = 200, y = 0), Vector2(32f,32f), AbilityManager.fireballAbility)
-            AreaManager.getActiveArea()!!.gameObjects.add(shopItem)
+            ShopManager.initShopItems()
+
+            if(newPlayer){
+                val coroutineScope = CoroutineScope(Dispatchers.Default)
+                coroutineScope.launch {
+                    //Wait for algo to come from the server
+                    delay(5000)
+                    AlgorandManager.optIntoAssets()
+                    println("opted into new accounts")
+                    //Wait for server to send starting gold to this account
+                    AlgorandManager.updatePlayerState(15000)
+                    println("updatedGold")
+                }
+            } else {
+                updatePlayerState(0L)
+            }
         }
         receiveGameStateFromServer()
     }

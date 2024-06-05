@@ -63,6 +63,7 @@ project(":core") {
         implementation 'com.squareup.okhttp3:okhttp:4.9.3'
         implementation("com.squareup.okhttp3:okhttp-sse:4.9.3")
         implementation "com.algorand:algosdk:2.4.0"
+        implementation 'commons-codec:commons-codec:1.15'
     }
 }
 

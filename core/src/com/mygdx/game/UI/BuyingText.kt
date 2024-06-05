@@ -4,13 +4,10 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.math.Vector3
-import com.mygdx.game.DefaultTextureHandler
-import com.mygdx.game.WINDOW_SCALE
-import com.mygdx.game.camera
 
-class BuyFeedbackText(): UIElement {
+object BuyingText: UIElement {
     val pos = Vector2(Gdx.graphics.width / 2f,Gdx.graphics.height / 2f)
+    var buying = false
     override val sprite = Sprite()
     val text = "Buying..."
 
@@ -25,7 +22,9 @@ class BuyFeedbackText(): UIElement {
     }
 
     override fun render(batch: SpriteBatch) {
-        FontManager.NormalTextFont.draw(batch, text, pos.x, pos.y)
+        if(buying){
+            FontManager.NormalTextFont.draw(batch, text, pos.x, pos.y)
+        }
     }
 
 }

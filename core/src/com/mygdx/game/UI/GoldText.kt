@@ -2,7 +2,7 @@ package com.mygdx.game.UI
 
 import FontManager
 import com.badlogic.gdx.graphics.Color
-import com.mygdx.game.GameObjects.Shop.Inventory
+import com.mygdx.game.GameObjects.Shop.InventoryManager
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
@@ -21,7 +21,7 @@ object GoldText: UIElement {
 
     }
     override fun render(batch: SpriteBatch) {
-        text = if(loading) "Loading Gold" else "${Inventory.gold} G"
+        text = if(loading) "Loading Gold" else "${InventoryManager.gold} G"
         val beforeColor = FontManager.NormalTextFont.color
         FontManager.NormalTextFont.color = Color.YELLOW
         FontManager.NormalTextFont.draw(batch, text, pos.x, pos.y)

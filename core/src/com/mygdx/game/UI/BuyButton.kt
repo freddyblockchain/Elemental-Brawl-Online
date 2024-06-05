@@ -7,8 +7,9 @@ import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
+import com.mygdx.game.Algorand.AlgorandManager
 import com.mygdx.game.DefaultTextureHandler
-import com.mygdx.game.GameObjects.Shop.Inventory
+import com.mygdx.game.GameObjects.Shop.InventoryManager
 import com.mygdx.game.GameObjects.Shop.ShopItem
 import com.mygdx.game.WINDOW_SCALE
 import com.mygdx.game.camera
@@ -38,15 +39,16 @@ class BuyButton(val shopItem: ShopItem,val amount: Int): UIElement {
             sprite.color = Color.BLACK
             sprite.draw(batch)
             val beforeColor = FontManager.NormalTextFont.color
-            FontManager.NormalTextFont.color = if(Inventory.gold >= amount) Color.GREEN else Color.RED
+            FontManager.NormalTextFont.color = if(InventoryManager.gold >= amount) Color.GREEN else Color.RED
             FontManager.NormalTextFont.draw(batch, text, sprite.x + offsetx, sprite.y + sprite.height - offsety)
             FontManager.NormalTextFont.color = beforeColor
         }
     }
 
     override fun onPress(): Boolean {
-        if(Inventory.gold >= amount && active){
-            UIManager.uiElements.add(BuyFeedbackText())
+        if(InventoryManager.gold >= amount && active && !BuyingText.buying){
+            BuyingText.buying = true
+            AlgorandManager.buyAbility(AlgorandManager.fireballAsa)
             return true
         }
         return false
