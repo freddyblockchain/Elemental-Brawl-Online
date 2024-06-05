@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import com.mygdx.game.Abilities.Ability
+import com.mygdx.game.Abilities.AbilityManager
 import com.mygdx.game.Collisions.AreaEntranceCollition
 import com.mygdx.game.Collisions.DefaultAreaEntranceCollition
 import com.mygdx.game.Collition.Collision
@@ -16,9 +17,11 @@ import com.mygdx.game.UI.BuyButton
 import com.mygdx.game.UI.UIManager
 import com.mygdx.game.player
 
-class ShopItem(gameObjectData: GameObjectData, size: Vector2, val ability: Ability) : GameObject(gameObjectData, size) {
+class ShopItem(gameObjectData: GameObjectData, size: Vector2, val abilityAsa: Long) : GameObject(gameObjectData, size) {
+    val ability = AbilityManager.abilityMap[abilityAsa]!!
     override val texture = ability.tooltipPicture
-    val buyButton = BuyButton(this, ability.price)
+    val price: Int = ShopManager.shopItemPrices[abilityAsa] ?: -1
+    val buyButton = BuyButton(this, price)
 
     init {
         UIManager.uiElements.add(buyButton)

@@ -14,7 +14,7 @@ class ShopManager {
             shopItemPrices = AlgorandManager.getAbilityPrices()
         }
         fun initShopItems(){
-            val shopItem = ShopItem(GameObjectData(x = 200, y = 0), Vector2(32f,32f), AbilityManager.fireballAbility)
+            val shopItem = ShopItem(GameObjectData(x = 200, y = 0), Vector2(32f,32f), AlgorandManager.fireballAsa)
             AreaManager.getActiveArea()!!.gameObjects.add(shopItem)
         }
     }

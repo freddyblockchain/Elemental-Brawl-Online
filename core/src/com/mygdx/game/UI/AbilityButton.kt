@@ -4,7 +4,10 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
+import com.badlogic.gdx.math.Vector2
 import com.mygdx.game.Abilities.Ability
+import com.mygdx.game.Abilities.AbilityManager
+import com.mygdx.game.Abilities.FireballAbility
 import com.mygdx.game.Timer.CooldownTimer
 import com.mygdx.game.UI.UIManager.Companion.uiShapeRenderer
 
@@ -14,7 +17,12 @@ class AbilityButton(val ability: Ability, val abilityOnPress: () -> Unit) : UIEl
     override var active = false
     init {
         sprite.setSize(200f, 200f)
-        sprite.setPosition(Gdx.graphics.width - 250f, 200f)
+
+        val position = when(ability){
+            AbilityManager.fireballAbility -> Vector2(Gdx.graphics.width - 250f, 200f)
+            else -> Vector2(0f,0f)
+        }
+        sprite.setPosition(position.x, position.y)
     }
 
     override fun render(UIbatch: SpriteBatch) {

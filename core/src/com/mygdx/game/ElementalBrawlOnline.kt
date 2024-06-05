@@ -39,7 +39,6 @@ import kotlinx.serialization.json.Json
 var player: Player = Player(GameObjectData(), Vector2(0f, 0f), -1)
 lateinit var currentGameMode: GameMode
 lateinit var mainMode: MainMode
-lateinit var sessionKey: String
 val playerActions = mutableListOf<PlayerAction>()
 val players = mutableMapOf<Int, Player>()
 var currentGameState = GameState(mutableListOf(), 0)
@@ -58,7 +57,7 @@ class ElementalBrawlOnline(val securePreferences: EBOSecurePreferences) : Applic
 
     lateinit var inputProcessor: MyInputProcessor
     lateinit var shapeRenderer: ShapeRenderer
-    val EBOStorageName = "EBOAccount21"
+    val EBOStorageName = "EBOAccount23"
     override fun create() {
         CoroutineScope(Dispatchers.Default).launch {
             ShopManager.initShop()
@@ -106,7 +105,6 @@ class ElementalBrawlOnline(val securePreferences: EBOSecurePreferences) : Applic
 
             // Init player
             val playerInitData = Json.decodeFromString<PlayerInitData>(response.bodyAsText())
-            sessionKey = playerInitData.sessionKey
             player = Player(GameObjectData(x = 100, y = -100), Vector2(32f, 32f), playerInitData.playerNum)
             playerStartPos = player.initPosition
             players[playerInitData.playerNum] = player

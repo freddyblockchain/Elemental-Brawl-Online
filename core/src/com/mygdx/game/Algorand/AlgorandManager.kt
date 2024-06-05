@@ -7,6 +7,7 @@ import com.algorand.algosdk.util.Encoder
 import com.algorand.algosdk.v2.client.common.Response
 import com.algorand.algosdk.v2.client.model.TransactionParametersResponse
 import com.mygdx.game.Abilities.AbilityManager
+import com.mygdx.game.Action.PlayerAction
 import com.mygdx.game.GameObjects.Shop.InventoryManager
 import com.mygdx.game.GameObjects.Shop.ShopItem
 import com.mygdx.game.Managers.AreaManager
@@ -14,6 +15,7 @@ import com.mygdx.game.UI.AbilityButton
 import com.mygdx.game.UI.BuyingText
 import com.mygdx.game.UI.GoldText
 import com.mygdx.game.UI.UIManager.Companion.uiElements
+import com.mygdx.game.playerActions
 import kotlinx.coroutines.*
 import java.math.BigInteger
 import java.nio.ByteBuffer
@@ -80,6 +82,7 @@ class AlgorandManager {
             coroutineScope.launch {
                 delay(delayTime)
                 updatePlayerAbilities()
+                playerActions.add(PlayerAction.UpdatePlayerState())
                 updateGoldCount()
             }
         }
