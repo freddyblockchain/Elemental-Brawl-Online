@@ -20,8 +20,7 @@ import com.mygdx.game.player
 class ShopItem(gameObjectData: GameObjectData, size: Vector2, val abilityAsa: Long) : GameObject(gameObjectData, size) {
     val ability = AbilityManager.abilityMap[abilityAsa]!!
     override val texture = ability.tooltipPicture
-    val price: Int = ShopManager.shopItemPrices[abilityAsa] ?: -1
-    val buyButton = BuyButton(this, price)
+    val buyButton = BuyButton(this)
 
     init {
         UIManager.uiElements.add(buyButton)

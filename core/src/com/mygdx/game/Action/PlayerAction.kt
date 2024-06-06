@@ -12,6 +12,12 @@ sealed interface PlayerAction {
     @SerialName("FireAbility")
     data class FireAbility(val pos: Pair<Float,Float>): PlayerAction
     @Serializable
+    @SerialName("IcicleAbility")
+    data class IcicleAbility(val pos: Pair<Float,Float>): PlayerAction
+    @Serializable
+    @SerialName("SnowballAbility")
+    data class SnowballAbility(val pos: Pair<Float,Float>): PlayerAction
+    @Serializable
     @SerialName("UpdatePlayerState")
     class UpdatePlayerState: PlayerAction
 }

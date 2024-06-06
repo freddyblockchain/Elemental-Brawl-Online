@@ -55,9 +55,9 @@ class MyInputProcessor : InputProcessor {
             Gdx.graphics.height - y.toFloat()
         )
         val worldCoords = camera.unproject(Vector3(x.toFloat(), y.toFloat(), 0f))
-
-        if (AbilityManager.availableAbilities.any { it.pressed }) {
-            val activeAbility = AbilityManager.availableAbilities.first { it.pressed }
+        val abilities = AbilityManager.abilityMap.values
+        if (abilities.any { it.pressed }) {
+            val activeAbility = abilities.first { it.pressed }
             activeAbility.tryActivate(Vector2(worldCoords.x, worldCoords.y))
             abilityActivated = true
         } else {

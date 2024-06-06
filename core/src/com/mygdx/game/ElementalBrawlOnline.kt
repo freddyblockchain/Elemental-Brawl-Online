@@ -57,7 +57,7 @@ class ElementalBrawlOnline(val securePreferences: EBOSecurePreferences) : Applic
 
     lateinit var inputProcessor: MyInputProcessor
     lateinit var shapeRenderer: ShapeRenderer
-    val EBOStorageName = "EBOAccount23"
+    val EBOStorageName = "EBOAccount26"
     override fun create() {
         CoroutineScope(Dispatchers.Default).launch {
             ShopManager.initShop()
@@ -143,7 +143,6 @@ class ElementalBrawlOnline(val securePreferences: EBOSecurePreferences) : Applic
             )
             it.setPosition(currentPos)
         }
-        val playerNew = player.currentPosition()
         if (newGameState != currentGameState) {
             currentGameState = newGameState
             ClientStateManager.serverUpdateState(currentGameState)
@@ -160,7 +159,7 @@ class ElementalBrawlOnline(val securePreferences: EBOSecurePreferences) : Applic
         RenderGraph.render(currentGameMode.spriteBatch)
         //AnimationManager.addAnimationsToRender()
         currentGameMode.FrameAction()
-       // drawrects()
+        drawrects()
         camera.position.set(player.sprite.x, player.sprite.y, 0f)
         camera.update()
         sendMessageToServer()

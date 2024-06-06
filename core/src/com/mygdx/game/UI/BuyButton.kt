@@ -11,11 +11,14 @@ import com.mygdx.game.Algorand.AlgorandManager
 import com.mygdx.game.DefaultTextureHandler
 import com.mygdx.game.GameObjects.Shop.InventoryManager
 import com.mygdx.game.GameObjects.Shop.ShopItem
+import com.mygdx.game.GameObjects.Shop.ShopManager
 import com.mygdx.game.WINDOW_SCALE
 import com.mygdx.game.camera
 
-class BuyButton(val shopItem: ShopItem,val amount: Int): UIElement {
+class BuyButton(val shopItem: ShopItem): UIElement {
 
+    val price
+        get() = ShopManager.shopItemPrices[shopItem.abilityAsa] ?: 999999
     val size = Vector2(90f * WINDOW_SCALE, 24f * WINDOW_SCALE)
     override var active = false
     override val sprite = Sprite(DefaultTextureHandler.getTexture("Box.png"))
@@ -24,14 +27,12 @@ class BuyButton(val shopItem: ShopItem,val amount: Int): UIElement {
 
     init {
         sprite.setSize(size.x, size.y)
-        val position = Vector3(shopItem.topleft.x, shopItem.topleft.y, 0f)
+        val position = Vector3(200f, 32f, 0f)
         println("pos before: " + position)
         camera.project(position)
         println("pos after: " + position)
         sprite.setPosition(position.x, Gdx.graphics.height - position.y - sprite.height)
     }
-
-    val text = "Buy: $amount G"
     override fun renderShape() {
     }
     override fun render(batch: SpriteBatch) {
@@ -39,16 +40,16 @@ class BuyButton(val shopItem: ShopItem,val amount: Int): UIElement {
             sprite.color = Color.BLACK
             sprite.draw(batch)
             val beforeColor = FontManager.NormalTextFont.color
-            FontManager.NormalTextFont.color = if(InventoryManager.gold >= amount) Color.GREEN else Color.RED
-            FontManager.NormalTextFont.draw(batch, text, sprite.x + offsetx, sprite.y + sprite.height - offsety)
+            FontManager.NormalTextFont.color = if(InventoryManager.gold >= price) Color.GREEN else Color.RED
+            FontManager.NormalTextFont.draw(batch, "Buy: $price G", sprite.x + offsetx, sprite.y + sprite.height - offsety)
             FontManager.NormalTextFont.color = beforeColor
         }
     }
 
     override fun onPress(): Boolean {
-        if(InventoryManager.gold >= amount && active && !BuyingText.buying){
+        if(InventoryManager.gold >= price && active && !BuyingText.buying){
             BuyingText.buying = true
-            AlgorandManager.buyAbility(AlgorandManager.fireballAsa)
+            AlgorandManager.buyAbility(shopItem.abilityAsa)
             return true
         }
         return false

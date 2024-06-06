@@ -6,7 +6,6 @@ import com.mygdx.game.Timer.CooldownTimer
 import com.mygdx.game.UI.UIManager
 
 abstract class Ability(val cooldown: Float) {
-    abstract val price: Int
     abstract val tooltipPicture: Texture
     var pressed = false
     protected abstract fun onActivate(targetPos: Vector2)

@@ -28,7 +28,8 @@ class AlgorandManager {
         val appApplicationAccount = "3HCZCKEI33BLEQ62G7H3ZEBGKTYGLRTFCLQXH6DGV4MUA36GNOZ57CQDTE"
         val goldAsa = 676111222L
         val fireballAsa = 676532256L
-        val abilityAsas = listOf(fireballAsa)
+        val icicleAsa = 677924248L
+        val abilityAsas = listOf(fireballAsa, icicleAsa)
 
         val assetsToOptInto = listOf(goldAsa) + abilityAsas
         lateinit var playerAccount: Account
@@ -112,7 +113,7 @@ class AlgorandManager {
             GoldText.loading = false
         }
 
-        fun buyAbility(abilityAsset: Long) {
+        fun buyAbility(abilityAsa: Long) {
             val rsp: Response<TransactionParametersResponse> = EBOAlgorandClient.TransactionParams().execute()
             val sp: TransactionParametersResponse = rsp.body()
 
@@ -131,12 +132,12 @@ class AlgorandManager {
                 .assetAmount(1)
                 .build()
 
-            val assets = listOf<Long>(abilityAsset)
+            val assets = listOf<Long>(abilityAsa)
             val methodName = "buy_asset"
             val methodNameBytes: ByteArray = methodName.toByteArray()
             val args: List<ByteArray> = listOf(methodNameBytes)
 
-            val boxes: List<AppBoxReference> = listOf(AppBoxReference(appId, itob(abilityAsset)))
+            val boxes: List<AppBoxReference> = listOf(AppBoxReference(appId, itob(abilityAsa)))
 
 
             val buyAbility: Transaction = Transaction.ApplicationCallTransactionBuilder()
