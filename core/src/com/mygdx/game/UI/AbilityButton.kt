@@ -17,8 +17,10 @@ class AbilityButton(val ability: Ability, val abilityOnPress: () -> Unit) : UIEl
         sprite.setSize(200f, 200f)
 
         val position = when(ability){
-            AbilityManager.fireballAbility -> Vector2(Gdx.graphics.width - 250f, 200f)
-            AbilityManager.icicleAbility -> Vector2( 250f, 200f)
+            AbilityManager.icicleAbility -> Vector2(Gdx.graphics.width - 250f, 300f)
+            AbilityManager.fireballAbility -> Vector2( 250f, 300f)
+            AbilityManager.dashAbility -> Vector2( 250f, 100f)
+            AbilityManager.snowballAbility -> Vector2(Gdx.graphics.width - 250f, 100f)
             else -> Vector2(0f,0f)
         }
         sprite.setPosition(position.x, position.y)

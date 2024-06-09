@@ -4,7 +4,7 @@ import com.mygdx.game.Action.PlayerAction
 import com.mygdx.game.DefaultTextureHandler
 import com.mygdx.game.playerActions
 
-class ProjectileAbility(cooldown: Float, textureImg: String,val playerActionConstructor: (pos: Pair<Float,Float>) -> PlayerAction): Ability(cooldown){
+class DefaultAbility(cooldown: Float, textureImg: String, val playerActionConstructor: (pos: Pair<Float,Float>) -> PlayerAction): Ability(cooldown){
     override val tooltipPicture = DefaultTextureHandler.getTexture(textureImg)
 
     override fun onActivate(targetPos: Vector2) {

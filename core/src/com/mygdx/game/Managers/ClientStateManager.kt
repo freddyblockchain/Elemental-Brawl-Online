@@ -3,10 +3,15 @@ package com.mygdx.game.Managers
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.math.Vector2
 import com.mygdx.game.*
+import com.mygdx.game.Algorand.AlgorandManager
 import com.mygdx.game.GameObjects.GameObject.MoveableObject
 import com.mygdx.game.GameObjects.MoveableEntities.Characters.Player
 import com.mygdx.game.GameObjects.MoveableObjects.Projectile.Fireball
+import com.mygdx.game.GameObjects.MoveableObjects.Projectile.Icicle
+import com.mygdx.game.GameObjects.MoveableObjects.Projectile.Snowball
+import com.mygdx.game.GameObjects.MoveableObjects.Projectile.projectileFactory
 import com.mygdx.game.Models.*
+import com.mygdx.game.UI.GoldText
 
 
 class ClientStateManager {
@@ -16,6 +21,8 @@ class ClientStateManager {
         var T1 = 0L + 50L
         var startTime = System.currentTimeMillis()
         val stateUpdateTime = 50L
+
+        var lastEventTime: Long = 0
 
         fun clientUpdateState() {
             updateClientTime(T1 + (Gdx.graphics.deltaTime * 1000).toLong())
@@ -34,20 +41,17 @@ class ClientStateManager {
         fun serverUpdateState(gameState: GameState) {
             //update time
             updateClientTime(gameState.gameTime)
-
+            //Handle server objects
             gameState.objectStates.forEach { entry ->
                 parseServerGameObject(entry)
             }
             removeOldObjects(gameState.objectStates)
-        }
 
-        fun removeOldObjects(serverGameObjects: List<ServerGameObject>) {
-            val serverGameObjectNumbers = serverGameObjects.map { it.serverGameObjectData.gameObjectNum }
-            val existingObjects = AreaManager.getActiveArea()!!.gameObjects.filterIsInstance<MoveableObject>()
-            existingObjects.forEach {
-                if (it.gameObjectNumber !in serverGameObjectNumbers) {
-                    AreaManager.getActiveArea()!!.gameObjects.remove(it)
-                }
+            //Handle player events
+            val newEvents = gameState.playerEvents.filter { it.timestamp > lastEventTime }
+            if(newEvents.isNotEmpty()){
+                lastEventTime = newEvents.map { it.timestamp }.max()
+                handleEvents(newEvents)
             }
         }
 
@@ -64,18 +68,12 @@ class ClientStateManager {
                         gameObjectData = GameObjectData(
                             x = serverGameObjectData.position.first.toInt(),
                             y = serverGameObjectData.position.second.toInt()
-                        ), Vector2(32f, 32f), serverGameObjectData.gameObjectNum
+                        ), Vector2(serverGameObjectData.size), serverGameObjectData.gameObjectNum
                     )
 
-                    GameObjectType.FIREBALL -> Fireball(
-                        gameObjectData = GameObjectData(
-                            x = serverGameObjectData.position.first.toInt(),
-                            y = serverGameObjectData.position.second.toInt()
-                        ),
-                        size = Vector2(60f, 30f),
-                        unitVectorDirection = Vector2(serverGameObjectData.unitVectorDirection),
-                        gameObjectNumber = serverGameObjectData.gameObjectNum
-                    )
+                    GameObjectType.FIREBALL -> projectileFactory(serverGameObjectData, ::Fireball)
+                    GameObjectType.ICICLE -> projectileFactory(serverGameObjectData, ::Icicle)
+                    GameObjectType.SNOWBALL -> projectileFactory(serverGameObjectData, ::Snowball)
                 }
                 gameObject.X0 = Vector2(serverGameObjectData.position.first, serverGameObjectData.position.second)
                 gameObject.X1 = Vector2(serverGameObjectData.position.first, serverGameObjectData.position.second)
@@ -86,7 +84,7 @@ class ClientStateManager {
 
         fun setObjectBasedOnData(gameObject: MoveableObject, serverGameObject: ServerGameObject) {
             val serverGameObjectData = serverGameObject.serverGameObjectData
-            gameObject.speed = serverGameObjectData.speed
+            gameObject.currentSpeed = serverGameObjectData.speed
             gameObject.currentUnitVector =
                 Vector2(serverGameObjectData.unitVectorDirection.first, serverGameObjectData.unitVectorDirection.second)
             updateObjectFuture(
@@ -108,6 +106,27 @@ class ClientStateManager {
         fun setIncrement(moveableObject: MoveableObject) {
             moveableObject.increment =
                 Vector2((moveableObject.X1 - moveableObject.X0) / (stateUpdateTime.toFloat() / (Gdx.graphics.deltaTime * 1000)))
+        }
+
+        fun removeOldObjects(serverGameObjects: List<ServerGameObject>) {
+            val serverGameObjectNumbers = serverGameObjects.map { it.serverGameObjectData.gameObjectNum }
+            val existingObjects = AreaManager.getActiveArea()!!.gameObjects.filterIsInstance<MoveableObject>()
+            existingObjects.forEach {
+                if (it.gameObjectNumber !in serverGameObjectNumbers) {
+                    AreaManager.getActiveArea()!!.gameObjects.remove(it)
+                }
+            }
+        }
+
+        fun handleEvents(playerEventList: List<PlayerEvent>){
+            playerEventList.forEach {
+                if(it is PlayerEvent.PlayerDeath){
+                    if(it.killingPlayer == player.playerNum){
+                        GoldText.loading = true
+                        AlgorandManager.updateGoldCount(5000)
+                    }
+                }
+            }
         }
     }
 }

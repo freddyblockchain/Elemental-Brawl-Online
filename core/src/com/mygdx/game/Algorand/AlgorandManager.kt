@@ -2,6 +2,7 @@ package com.mygdx.game.Algorand
 
 import EBOAlgorandClient
 import com.algorand.algosdk.account.Account
+import com.algorand.algosdk.crypto.Address
 import com.algorand.algosdk.transaction.*
 import com.algorand.algosdk.util.Encoder
 import com.algorand.algosdk.v2.client.common.Response
@@ -10,6 +11,7 @@ import com.mygdx.game.Abilities.AbilityManager
 import com.mygdx.game.Action.PlayerAction
 import com.mygdx.game.GameObjects.Shop.InventoryManager
 import com.mygdx.game.GameObjects.Shop.ShopItem
+import com.mygdx.game.GameObjects.Shop.ShopManager
 import com.mygdx.game.Managers.AreaManager
 import com.mygdx.game.UI.AbilityButton
 import com.mygdx.game.UI.BuyingText
@@ -29,7 +31,9 @@ class AlgorandManager {
         val goldAsa = 676111222L
         val fireballAsa = 676532256L
         val icicleAsa = 677924248L
-        val abilityAsas = listOf(fireballAsa, icicleAsa)
+        val snowballAsa = 677926089L
+        val dashAsa = 678786539L
+        val abilityAsas = listOf(fireballAsa, icicleAsa, snowballAsa, dashAsa)
 
         val assetsToOptInto = listOf(goldAsa) + abilityAsas
         lateinit var playerAccount: Account
@@ -106,11 +110,32 @@ class AlgorandManager {
             }
         }
 
-        private fun updateGoldCount() {
-            val information = EBOAlgorandClient.AccountAssetInformation(playerAccount.address, goldAsa).execute()
-            val amount = information.body().assetHolding.amount
-            InventoryManager.gold = amount.toInt()
-            GoldText.loading = false
+        fun updateGoldCount(delayTime: Long = 0L) {
+            val coroutineScope = CoroutineScope(Dispatchers.Default)
+            coroutineScope.launch {
+                delay(delayTime)
+                val information = EBOAlgorandClient.AccountAssetInformation(playerAccount.address, goldAsa).execute()
+                val amount = information.body().assetHolding.amount
+                InventoryManager.gold = amount.toInt()
+                GoldText.loading = false
+            }
+        }
+
+        fun playerIsOptedIntoGold(): Boolean{
+            try {
+                // Fetch account information
+                val accountInfo = EBOAlgorandClient.AccountInformation(playerAccount.address).execute().body()
+                // Check asset holdings
+                for (asset in accountInfo.assets) {
+                    if (asset.assetId == goldAsa) {
+                        return true
+                    }
+                }
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            return false
         }
 
         fun buyAbility(abilityAsa: Long) {
@@ -123,13 +148,15 @@ class AlgorandManager {
             val atc = AtomicTransactionComposer()
             val transactionSigner = playerAccount.transactionSigner
 
+            val assetAmount = ShopManager.shopItemPrices[abilityAsa]
+
             //Get asset total Later
 
             val sendGold = Transaction.AssetTransferTransactionBuilder().suggestedParams(sp)
                 .sender(playerAccount.address)
                 .assetIndex(goldAsa)
                 .assetReceiver(appApplicationAccount)
-                .assetAmount(1)
+                .assetAmount(assetAmount)
                 .build()
 
             val assets = listOf<Long>(abilityAsa)

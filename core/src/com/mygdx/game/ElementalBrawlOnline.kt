@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.Polygon
 import com.badlogic.gdx.math.Vector2
 import com.mygdx.game.Action.PlayerAction
 import com.mygdx.game.Algorand.AlgorandManager
+import com.mygdx.game.Algorand.AlgorandManager.Companion.playerIsOptedIntoGold
 import com.mygdx.game.Algorand.AlgorandManager.Companion.updatePlayerState
 import com.mygdx.game.Algorand.EBOSecurePreferences
 import com.mygdx.game.GameModes.GameMode
@@ -41,8 +42,8 @@ lateinit var currentGameMode: GameMode
 lateinit var mainMode: MainMode
 val playerActions = mutableListOf<PlayerAction>()
 val players = mutableMapOf<Int, Player>()
-var currentGameState = GameState(mutableListOf(), 0)
-var newGameState = GameState(mutableListOf(), 0)
+var currentGameState = GameState(mutableListOf(), 0, listOf())
+var newGameState = GameState(mutableListOf(), 0, listOf())
 var currentPos = Vector2()
 
 val WINDOW_SCALE = 5
@@ -57,7 +58,7 @@ class ElementalBrawlOnline(val securePreferences: EBOSecurePreferences) : Applic
 
     lateinit var inputProcessor: MyInputProcessor
     lateinit var shapeRenderer: ShapeRenderer
-    val EBOStorageName = "EBOAccount26"
+    val EBOStorageName = "EBOAccount28"
     override fun create() {
         CoroutineScope(Dispatchers.Default).launch {
             ShopManager.initShop()
@@ -80,7 +81,6 @@ class ElementalBrawlOnline(val securePreferences: EBOSecurePreferences) : Applic
         shapeRenderer = ShapeRenderer()
         initObjects()
         DialogueManager.initSpeakableObjects()
-        // getArticyDraftEntries()
         AreaManager.setActiveArea(AreaManager.areas[0].areaIdentifier)
 
         runBlocking {
@@ -112,16 +112,15 @@ class ElementalBrawlOnline(val securePreferences: EBOSecurePreferences) : Applic
 
             ShopManager.initShopItems()
 
-            if(newPlayer){
+            if(newPlayer || !playerIsOptedIntoGold()){
                 val coroutineScope = CoroutineScope(Dispatchers.Default)
                 coroutineScope.launch {
                     //Wait for algo to come from the server
                     delay(5000)
                     AlgorandManager.optIntoAssets()
                     println("opted into new accounts")
-                    //Wait for server to send starting gold to this account
-                    AlgorandManager.updatePlayerState(15000)
-                    println("updatedGold")
+                    //Wait assets to be opted in.
+                    AlgorandManager.updatePlayerState(4000)
                 }
             } else {
                 updatePlayerState(0L)
@@ -159,7 +158,7 @@ class ElementalBrawlOnline(val securePreferences: EBOSecurePreferences) : Applic
         RenderGraph.render(currentGameMode.spriteBatch)
         //AnimationManager.addAnimationsToRender()
         currentGameMode.FrameAction()
-        drawrects()
+        //drawrects()
         camera.position.set(player.sprite.x, player.sprite.y, 0f)
         camera.update()
         sendMessageToServer()

@@ -17,6 +17,7 @@ object JsonConfig {
                 subclass(PlayerAction.Move::class, PlayerAction.Move.serializer())
                 subclass(PlayerAction.FireAbility::class, PlayerAction.FireAbility.serializer())
                 subclass(PlayerAction.IcicleAbility::class, PlayerAction.IcicleAbility.serializer())
+                subclass(PlayerAction.SnowballAbility::class, PlayerAction.SnowballAbility.serializer())
                 subclass(PlayerAction.UpdatePlayerState::class, PlayerAction.UpdatePlayerState.serializer())
             }
             polymorphic(CustomFields::class) {

@@ -11,7 +11,7 @@ interface CannotMoveStrategy {
 
 class MoveRegardless: CannotMoveStrategy {
     override fun CannotMoveAction(moveableObject: MoveableObject) {
-        moveableObject.setPosition(Vector2(moveableObject.sprite.x,moveableObject.sprite.y) + moveableObject.currentUnitVector * moveableObject.getCurrentSpeed())
+        moveableObject.setPosition(Vector2(moveableObject.sprite.x,moveableObject.sprite.y) + moveableObject.currentUnitVector * moveableObject.currentSpeed)
     }
 }
 

@@ -14,10 +14,14 @@ class ShopManager {
             shopItemPrices = AlgorandManager.getAbilityPrices()
         }
         fun initShopItems(){
-            val fireball = ShopItem(GameObjectData(x = 200, y = 0), Vector2(32f,32f), AlgorandManager.fireballAsa)
-            val icicle = ShopItem(GameObjectData(x = 100, y = 0), Vector2(32f,32f), AlgorandManager.icicleAsa)
+            val fireball = ShopItem(GameObjectData(x = 150, y = -25), Vector2(32f,32f), AlgorandManager.fireballAsa)
+            val icicle = ShopItem(GameObjectData(x = 250, y = -25), Vector2(32f,32f), AlgorandManager.icicleAsa)
+            val dash = ShopItem(GameObjectData(x = 150, y = 25), Vector2(32f,32f), AlgorandManager.dashAsa)
+            val snowball = ShopItem(GameObjectData(x = 250, y = 25), Vector2(32f,32f), AlgorandManager.snowballAsa)
             AreaManager.getActiveArea()!!.gameObjects.add(fireball)
             AreaManager.getActiveArea()!!.gameObjects.add(icicle)
+            AreaManager.getActiveArea()!!.gameObjects.add(dash)
+            AreaManager.getActiveArea()!!.gameObjects.add(snowball)
         }
     }
 }

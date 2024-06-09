@@ -14,7 +14,8 @@ import com.mygdx.game.times
 abstract class MoveableObject(gameObjectData: GameObjectData, size: Vector2, val gameObjectNumber: Int) :
     GameObject(gameObjectData, size), RotationalObject by DefaultRotationalObject(),
     DirectionalObject {
-    abstract var speed: Float
+    abstract var currentSpeed: Float
+    abstract var normalSpeed: Float
     abstract val cannotMoveStrategy: CannotMoveStrategy
     private var canMove = true
     var currentUnitVector: Vector2 = Vector2(0f,0f)
@@ -25,7 +26,7 @@ abstract class MoveableObject(gameObjectData: GameObjectData, size: Vector2, val
 
     open fun move(newUnitVector: Vector2): Boolean {
         if (canMove) {
-            val nextIncrement = newUnitVector * this.getCurrentSpeed()
+            val nextIncrement = newUnitVector * this.currentSpeed
             currentUnitVector = newUnitVector
             val moveSuccessfull = moveObject(nextIncrement)
             return moveSuccessfull
@@ -62,8 +63,5 @@ abstract class MoveableObject(gameObjectData: GameObjectData, size: Vector2, val
             cannotMoveStrategy.CannotMoveAction(this)
             return false
         }
-    }
-    fun getCurrentSpeed(): Float {
-        return  speed
     }
 }

@@ -1,16 +1,20 @@
 package com.mygdx.game.Models
 
+import com.badlogic.gdx.math.Vector2
 import com.mygdx.game.GameObjects.MoveableEntities.Characters.PLAYER_STATUS
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-enum class GameObjectType{PLAYER, FIREBALL}
+enum class FIGHTER_STATE {FREE, STUNNED, DASHING}
+
+enum class GameObjectType{PLAYER, FIREBALL, ICICLE, SNOWBALL}
 
 @Serializable
-data class ServerGameObjectData(val position: Pair<Float, Float>, val unitVectorDirection: Pair<Float,Float>, val speed: Float, val gameObjectNum: Int, val gameObjectType: GameObjectType)
+data class ServerGameObjectData(val position: Pair<Float, Float>, val size: Pair<Float, Float>, val unitVectorDirection: Pair<Float,Float>, val speed: Float, val gameObjectNum: Int, val gameObjectType: GameObjectType)
 
 @Serializable
 open class ServerGameObject(val serverGameObjectData: ServerGameObjectData, val customFields: CustomFields = CustomFields.EmptyCustomFields)
+
 @Serializable
 sealed interface CustomFields{
     @Serializable
@@ -18,10 +22,21 @@ sealed interface CustomFields{
     data object EmptyCustomFields : CustomFields
     @Serializable
     @SerialName("PlayerCustomFields")
-    class PlayerCustomFields(val status: PLAYER_STATUS, val playerHealth: Float): CustomFields
+    class PlayerCustomFields(val fighterState: FIGHTER_STATE, val playerHealth: Float): CustomFields
 }
+
 @Serializable
-data class GameState(val objectStates: List<ServerGameObject>, val gameTime: Long)
+sealed interface PlayerEvent{
+    @Serializable
+    val timestamp: Long
+
+    @Serializable
+    @SerialName("PlayerDeath")
+    class PlayerDeath(val deadPlayer: Int, val killingPlayer: Int, override val timestamp: Long): PlayerEvent
+}
+
+@Serializable
+data class GameState(val objectStates: List<ServerGameObject>, val gameTime: Long, val playerEvents: List<PlayerEvent>)
 
 @Serializable
 data class SseEvent(

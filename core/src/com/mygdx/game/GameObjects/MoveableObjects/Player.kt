@@ -20,7 +20,8 @@ enum class PLAYER_STATUS {ALIVE, DEAD}
 class Player(gameObjectData: GameObjectData, size: Vector2, val playerNum: Int)
     : MoveableObject(gameObjectData, size, playerNum), NormalFightableEntity{
     override val texture = DefaultTextureHandler.getTexture("player.png")
-    override var speed: Float = 20f
+    override var currentSpeed = 0f
+    override var normalSpeed = 0f
     override val cannotMoveStrategy = NoAction()
     override val layer = Layer.PERSON
     override var direction = Direction.RIGHT
