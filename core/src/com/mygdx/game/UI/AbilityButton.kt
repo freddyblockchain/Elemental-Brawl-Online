@@ -30,7 +30,7 @@ class AbilityButton(val ability: Ability, val abilityOnPress: () -> Unit) : UIEl
         if(cooldownTimer.cooldownAvailable()){
             sprite.setAlpha(1f)
         }else{
-            sprite.setAlpha(0.5f)
+            sprite.setAlpha(0.2f)
         }
         sprite.draw(UIbatch)
     }

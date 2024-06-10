@@ -58,7 +58,7 @@ class ElementalBrawlOnline(val securePreferences: EBOSecurePreferences) : Applic
 
     lateinit var inputProcessor: MyInputProcessor
     lateinit var shapeRenderer: ShapeRenderer
-    val EBOStorageName = "EBOAccount28"
+    val EBOStorageName = "EBOAccount61"
     override fun create() {
         CoroutineScope(Dispatchers.Default).launch {
             ShopManager.initShop()

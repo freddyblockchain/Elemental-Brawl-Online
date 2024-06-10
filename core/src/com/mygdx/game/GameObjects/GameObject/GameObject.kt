@@ -14,6 +14,7 @@ import com.mygdx.game.GameObjectData
 import com.mygdx.game.InitPolygon
 import com.mygdx.game.InitSprite
 import com.mygdx.game.Managers.AreaManager
+import com.mygdx.game.ObjectProperties.EBOParticleEffect
 import com.mygdx.game.Rendering.Renderable
 import com.mygdx.game.Utils.RenderGraph.Companion.addToSceneGraph
 import com.mygdx.game.currentGameMode
@@ -33,6 +34,7 @@ abstract class GameObject(gameObjectData: GameObjectData, val size: Vector2): Re
     val currentMiddle: Vector2
     get() = Vector2(sprite.x + sprite.width/2, sprite.y + sprite.height/2)
     var startingPosition = initPosition
+    val properties = mutableListOf<EBOParticleEffect>()
 
     //Remember this. Temporary solution. texture must be overriden before polygon is called
     abstract val texture: Texture
@@ -47,6 +49,9 @@ abstract class GameObject(gameObjectData: GameObjectData, val size: Vector2): Re
     }
     open fun frameTask(){
         addToSceneGraph(this)
+        for(property in properties){
+            addToSceneGraph(property)
+        }
     }
     open fun initObject(){
 

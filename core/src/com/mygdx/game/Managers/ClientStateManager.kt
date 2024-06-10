@@ -11,6 +11,7 @@ import com.mygdx.game.GameObjects.MoveableObjects.Projectile.Icicle
 import com.mygdx.game.GameObjects.MoveableObjects.Projectile.Snowball
 import com.mygdx.game.GameObjects.MoveableObjects.Projectile.projectileFactory
 import com.mygdx.game.Models.*
+import com.mygdx.game.Particles.FireDashEffect
 import com.mygdx.game.UI.GoldText
 
 
@@ -95,6 +96,17 @@ class ClientStateManager {
             if (gameObject is Player) {
                 val customData = serverGameObject.customFields as CustomFields.PlayerCustomFields
                 gameObject.health = customData.playerHealth
+
+                if(gameObject.fighterState != FIGHTER_STATE.DASHING && customData.fighterState == FIGHTER_STATE.DASHING){
+                    val fireDashEffect = FireDashEffect(gameObject)
+                    gameObject.properties.add(fireDashEffect)
+                    fireDashEffect.start()
+                } else if(gameObject.fighterState == FIGHTER_STATE.DASHING && customData.fighterState != FIGHTER_STATE.DASHING){
+                    val fireDashEffects = gameObject.properties.filterIsInstance<FireDashEffect>()
+                    gameObject.properties.removeAll(fireDashEffects)
+                }
+                gameObject.fighterState = customData.fighterState
+
             }
         }
 

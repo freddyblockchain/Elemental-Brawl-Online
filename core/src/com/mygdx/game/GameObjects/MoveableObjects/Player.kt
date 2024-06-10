@@ -11,6 +11,7 @@ import com.mygdx.game.Enums.Layer
 import com.mygdx.game.GameObjectData
 import com.mygdx.game.GameObjects.GameObject.MoveableObject
 import com.mygdx.game.GameObjects.GameObject.NormalFightableEntity
+import com.mygdx.game.Models.FIGHTER_STATE
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -32,6 +33,7 @@ class Player(gameObjectData: GameObjectData, size: Vector2, val playerNum: Int)
     var status: PLAYER_STATUS = PLAYER_STATUS.ALIVE
     override var health = 100f
     override val maxHealth = 100f
+    var fighterState = FIGHTER_STATE.FREE
 
     override fun frameTask() {
         super.frameTask()

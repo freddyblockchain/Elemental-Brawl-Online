@@ -32,7 +32,7 @@ class NetworkingManager{
         val clientSendingSocket = DatagramSocket(49999)
         val localPort = clientSendingSocket.localPort  // Retrieve the automatically assigned
 
-        val hostName = localAddress
+        val hostName = remoteAddress
         val serverAddress = "http://$hostName"
 
         val listeningSocket = DatagramSocket(null)

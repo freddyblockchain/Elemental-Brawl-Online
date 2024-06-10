@@ -47,7 +47,7 @@ class BuyButton(val shopItem: ShopItem): UIElement {
     }
 
     override fun onPress(): Boolean {
-        if(InventoryManager.gold >= price && active && !BuyingText.buying){
+        if(InventoryManager.gold >= price && active && !BuyingText.buying && !GoldText.loading){
             BuyingText.buying = true
             AlgorandManager.buyAbility(shopItem.abilityAsa)
             return true
