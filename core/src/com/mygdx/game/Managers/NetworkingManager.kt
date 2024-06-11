@@ -1,10 +1,12 @@
 package com.mygdx.game.Managers
 
+import VerificationManager
 import com.badlogic.gdx.Gdx
 import com.example.game.JsonConfig
 import com.mygdx.game.Action.PlayerAction
 import com.mygdx.game.Algorand.AlgorandManager
 import com.mygdx.game.Models.SseEvent
+import com.mygdx.game.Models.VerificationData
 import com.mygdx.game.newGameState
 import com.mygdx.game.playerActions
 import kotlinx.serialization.Serializable
@@ -22,7 +24,7 @@ import java.net.InetSocketAddress
 
 
 @Serializable
-data class UdpPacket(val action: PlayerAction, val address: String)
+data class UdpPacket(val action: PlayerAction, val verificationData: VerificationData)
 class NetworkingManager{
     companion object {
         val localAddress = "192.168.87.147"
@@ -32,7 +34,7 @@ class NetworkingManager{
         val clientSendingSocket = DatagramSocket(49999)
         val localPort = clientSendingSocket.localPort  // Retrieve the automatically assigned
 
-        val hostName = remoteAddress
+        val hostName = localAddress
         val serverAddress = "http://$hostName"
 
         val listeningSocket = DatagramSocket(null)
@@ -47,15 +49,12 @@ class NetworkingManager{
 
             try {
 
-                // Prepare a message to send
                 for (action in playerActions){
-                    val message = JsonConfig.json.encodeToString(UdpPacket(action, AlgorandManager.playerAccount.address.toString()))
+                    val message = JsonConfig.json.encodeToString(UdpPacket(action, VerificationManager.getVerificationData()))
                     val buffer = message.toByteArray()
 
-                    // Assuming the server is running on localhost and listening on port 9999
                     val serverAddress = InetAddress.getByName(hostName)
 
-                    // Create a packet to send to the server
                     val packet = DatagramPacket(buffer, buffer.size, serverAddress, serverPort)
                     clientSendingSocket.send(packet)
                 }

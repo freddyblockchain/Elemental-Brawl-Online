@@ -15,7 +15,7 @@ import com.mygdx.game.Models.FIGHTER_STATE
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class PlayerInitData(val address: String, val playerNum: Int)
+data class PlayerInitData(val address: String, val playerNum: Int, val serverUUID: String)
 enum class PLAYER_STATUS {ALIVE, DEAD}
 
 class Player(gameObjectData: GameObjectData, size: Vector2, val playerNum: Int)

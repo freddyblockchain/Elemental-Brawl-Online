@@ -36,7 +36,10 @@ sealed interface PlayerEvent{
 }
 
 @Serializable
-data class GameState(val objectStates: List<ServerGameObject>, val gameTime: Long, val playerEvents: List<PlayerEvent>)
+data class VerificationData(val message: String, val signature: ByteArray, val address: String)
+
+@Serializable
+data class GameState(val objectStates: List<ServerGameObject>, val gameTime: Long, val playerEvents: List<PlayerEvent>,val serverUUID: String)
 
 @Serializable
 data class SseEvent(

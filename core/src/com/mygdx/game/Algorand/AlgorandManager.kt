@@ -16,6 +16,7 @@ import com.mygdx.game.Managers.AreaManager
 import com.mygdx.game.UI.AbilityButton
 import com.mygdx.game.UI.BuyingText
 import com.mygdx.game.UI.GoldText
+import com.mygdx.game.UI.UIManager
 import com.mygdx.game.UI.UIManager.Companion.uiElements
 import com.mygdx.game.playerActions
 import kotlinx.coroutines.*
@@ -104,6 +105,7 @@ class AlgorandManager {
                     shopItems.forEach { shopItem ->
                         if(shopItem.ability == ability){
                             AreaManager.getActiveArea()!!.gameObjects.remove(shopItem)
+                            UIManager.uiElements.remove(shopItem.buyButton)
                         }
                     }
                 }

@@ -1,6 +1,7 @@
 package com.mygdx.game
 
 import FontManager
+import VerificationManager
 import com.algorand.algosdk.account.Account
 import com.badlogic.gdx.ApplicationAdapter
 import com.badlogic.gdx.Gdx
@@ -25,7 +26,7 @@ import com.mygdx.game.Managers.*
 import com.mygdx.game.Managers.NetworkingManager.Companion.receiveGameStateFromServer
 import com.mygdx.game.Managers.NetworkingManager.Companion.sendMessageToServer
 import com.mygdx.game.Models.GameState
-import com.mygdx.game.ServerTraffic.Models.AuthorizationData
+import com.mygdx.game.ServerTraffic.Models.AuthenticationData
 import com.mygdx.game.ServerTraffic.httpClient
 import com.mygdx.game.UI.GoldText
 import com.mygdx.game.UI.UIManager
@@ -42,8 +43,8 @@ lateinit var currentGameMode: GameMode
 lateinit var mainMode: MainMode
 val playerActions = mutableListOf<PlayerAction>()
 val players = mutableMapOf<Int, Player>()
-var currentGameState = GameState(mutableListOf(), 0, listOf())
-var newGameState = GameState(mutableListOf(), 0, listOf())
+var currentGameState = GameState(mutableListOf(), 0, listOf(), "")
+var newGameState = GameState(mutableListOf(), 0, listOf(), "")
 var currentPos = Vector2()
 
 val WINDOW_SCALE = 5
@@ -58,7 +59,7 @@ class ElementalBrawlOnline(val securePreferences: EBOSecurePreferences) : Applic
 
     lateinit var inputProcessor: MyInputProcessor
     lateinit var shapeRenderer: ShapeRenderer
-    val EBOStorageName = "EBOAccount61"
+    val EBOStorageName = "EBOAccount73"
     override fun create() {
         CoroutineScope(Dispatchers.Default).launch {
             ShopManager.initShop()
@@ -95,11 +96,11 @@ class ElementalBrawlOnline(val securePreferences: EBOSecurePreferences) : Applic
             val myValue = securePreferences.getString(EBOStorageName, "")
             AlgorandManager.playerAccount = Account(myValue)
             println("address is: " + AlgorandManager.playerAccount.address.toString())
-            val authorizationData =
-                AuthorizationData("signed message", 10, AlgorandManager.playerAccount.address.toString(), "fwqerwqeqw", NetworkingManager.localPort)
-            val response = httpClient.post("${NetworkingManager.serverAddress}:8080/authorize") {
+            val authenticationData =
+                AuthenticationData(VerificationManager.getVerificationData(System.currentTimeMillis().toString()), NetworkingManager.localPort)
+            val response = httpClient.post("${NetworkingManager.serverAddress}:8080/authenticate") {
                 contentType(ContentType.Application.Json)
-                setBody(Json.encodeToString(authorizationData))
+                setBody(Json.encodeToString(authenticationData))
             }
             GoldText.loading = true
 

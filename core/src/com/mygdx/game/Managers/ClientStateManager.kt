@@ -1,5 +1,6 @@
 package com.mygdx.game.Managers
 
+import VerificationManager
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.math.Vector2
 import com.mygdx.game.*
@@ -40,6 +41,7 @@ class ClientStateManager {
         }
 
         fun serverUpdateState(gameState: GameState) {
+            VerificationManager.serverUUID = gameState.serverUUID
             //update time
             updateClientTime(gameState.gameTime)
             //Handle server objects
@@ -135,7 +137,7 @@ class ClientStateManager {
                 if(it is PlayerEvent.PlayerDeath){
                     if(it.killingPlayer == player.playerNum){
                         GoldText.loading = true
-                        AlgorandManager.updateGoldCount(5000)
+                        AlgorandManager.updateGoldCount(6000)
                     }
                 }
             }
