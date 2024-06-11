@@ -70,13 +70,13 @@ The code written specifically for this hackathon includes:
 **Elemental Brawl Online** has these three main components working together:
 
 1. **Game Server**:
-    - It acts as the single source of truth for the game state.
+    - The server acts as the single source of truth for the game state.
     - The server receives player input via UDP and streams the game state via server-side events.
     - The server has access to an Algorand asset called "gold," which it can send to players as a reward for progressing in the game.
 
-2. **Player Application**:
-    - Players use an Android application made with libGDX.
-    - This application creates and stores an Algorand account associated with the player.
+2. **Game App**:
+    - The game is an android app made with libgdx.
+    - The game app creates and stores an Algorand account associated with the player.
     - The Algorand account is used to buy abilities in the game and to authenticate the player to the server.
 
 3. **Smart Contract (Shop)**:
@@ -114,7 +114,7 @@ The authentication mechanism in **Elemental Brawl Online (EBO)** works as follow
 
 3. **Server Verification**:
     - The server verifies that the player correctly signed the UUID it sent.
-    - This ensures the player owns the account they claim to have, streamlining the server's job to simply verifying the signature.
+    - This ensures the player owns the account they claim to have, simplifying the server's job to simply verifying the signature.
 
 4. **Replay Attack Mitigation**:
     - The risk of replay attacks is minimal because players must sign the most recent UUIDs.
