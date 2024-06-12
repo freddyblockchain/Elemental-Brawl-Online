@@ -37,7 +37,8 @@ There are two ways to run the game:
    - Run the game.
 
 2. **Download the APK**:
-   - Download the APK from [this link](https://drive.google.com/file/d/1DmGKey3RHtOkxgyl2LIwZ0ywqC0O_vzY/view?usp=drive_link) on your Android phone.
+   - Download the APK from [this link](https://drive.google.com/file/d/1DmGKey3RHtOkxgyl2LIwZ0ywqC0O_vzY/view?usp=drive_link).
+   - Run the app on your android phone
 
 When running the game, be sure to play with one or more other people, as you need to defeat other players to earn gold in the game.
 
