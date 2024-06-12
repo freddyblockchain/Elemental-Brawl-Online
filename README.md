@@ -26,11 +26,33 @@ SOFTWARE.
 Elemental Brawl Online is a realtime online multiplayer action game. 
 The goal of the game is to defeat other players, and attain new
 abilities by doing so. The game is loosely based on the Warcraft
-3 mod "Warlock". 
+3 mod "Warlock".
+
+## Run Instructions
+
+There are two ways to run the game:
+
+1. **Clone the Project in IntelliJ**:
+   - Set up an emulator.
+   - Run the game.
+
+2. **Download the APK**:
+   - Download the APK from [this link](https://drive.google.com/file/d/1DmGKey3RHtOkxgyl2LIwZ0ywqC0O_vzY/view?usp=drive_link) on your Android phone.
+
+When running the game, be sure to play with one or more other people, as you need to defeat other players to earn gold in the game.
+
+## Guide and Controls
+
+- **Movement**: Touch the screen to move the player.
+- **Buying Abilities**: At the starting area, there is a shop area at the top. Buy abilities by clicking on the buy button, when standing on an ability. The fireball ability is free.
+- **Using Abilities**:
+   - Touch an ability to activate it.
+   - Touch the screen again to fire the ability in the direction of the touch.
+- **Avoid Lava**: Lava is dangerous, so be careful around it.
 
 ## Code from Previous Projects
 
-A lot of code related to the game engine comes from my Game Engine repository, which you can find here: [GameEngine Repository](https://github.com/freddy212/GameEngine).
+A lot of the game engine code comes from my Game Engine repository, which you can find here: [GameEngine Repository](https://github.com/freddy212/GameEngine).
 This code is present on both the server and client applications. 
 
 The code written specifically for this hackathon includes:
@@ -72,7 +94,7 @@ The code written specifically for this hackathon includes:
 1. **Game Server**:
     - The server acts as the single source of truth for the game state.
     - The server receives player input via UDP and streams the game state via server-side events.
-    - The server has access to an Algorand asset called "gold," which it can send to players as a reward for progressing in the game.
+    - The server has access to an Algorand asset called "gold," which it sends to players as a reward for defeating players in the game.
 
 2. **Game App**:
     - The game is an android app made with libgdx.
@@ -96,10 +118,6 @@ The code written specifically for this hackathon includes:
     - The server no longer needs to handle the verification of player progress or identity.
     - EBO employs a novel authentication mechanism that is lightweight, enabling the server to efficiently verify that the player sending UDP input messages actually owns the account they claim to have.
 
-The first point enable potential future use for the assets accrued by the player in other areas than EBO.
-The second point can be used in all game servers, to quickly and securely authenticate players, and view
-what they have access to. 
-
 ## Authentication
 
 The authentication mechanism in **Elemental Brawl Online (EBO)** works as follows:
@@ -120,8 +138,6 @@ The authentication mechanism in **Elemental Brawl Online (EBO)** works as follow
     - The risk of replay attacks is minimal because players must sign the most recent UUIDs.
 
 This approach minimizes cheating, while maintaining the fast I/O speed required for real-time gameplay.
-
-
 
 ## Roadmap
 
