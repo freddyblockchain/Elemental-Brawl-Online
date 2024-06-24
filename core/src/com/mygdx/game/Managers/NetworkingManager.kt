@@ -8,6 +8,7 @@ import com.mygdx.game.Algorand.AlgorandManager
 import com.mygdx.game.Models.SseEvent
 import com.mygdx.game.Models.VerificationData
 import com.mygdx.game.newGameState
+import com.mygdx.game.player
 import com.mygdx.game.playerActions
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
@@ -25,11 +26,12 @@ import java.net.InetSocketAddress
 
 @Serializable
 data class UdpPacket(val action: PlayerAction, val verificationData: VerificationData)
-class NetworkingManager{
+class NetworkingManager {
     companion object {
         val localAddress = "192.168.87.147"
         val remoteAddress = "159.65.23.143"
         val serverPort = 50000
+
         // prev 0
         val clientSendingSocket = DatagramSocket(49999)
         val localPort = clientSendingSocket.localPort  // Retrieve the automatically assigned
@@ -45,12 +47,13 @@ class NetworkingManager{
             listeningSocket.bind(InetSocketAddress(clientSendingSocket.localPort))
         }
 
-        fun sendMessageToServer(){
+        fun sendMessageToServer() {
 
             try {
 
-                for (action in playerActions){
-                    val message = JsonConfig.json.encodeToString(UdpPacket(action, VerificationManager.getVerificationData()))
+                for (action in playerActions) {
+                    val message =
+                        JsonConfig.json.encodeToString(UdpPacket(action, VerificationManager.getVerificationData()))
                     val buffer = message.toByteArray()
 
                     val serverAddress = InetAddress.getByName(hostName)
@@ -58,7 +61,7 @@ class NetworkingManager{
                     val packet = DatagramPacket(buffer, buffer.size, serverAddress, serverPort)
                     clientSendingSocket.send(packet)
                 }
-                if(playerActions.isNotEmpty()){
+                if (playerActions.isNotEmpty()) {
                     playerActions.clear()
                 }
 
@@ -67,35 +70,34 @@ class NetworkingManager{
                 e.printStackTrace()
             }
         }
+
         fun receiveGameStateFromServer() {
             val client = OkHttpClient()
             val request: Request = Request.Builder()
-                .url(("${serverAddress}:8080/gameState"))
+                .url(("${serverAddress}:8080/gameState/${AlgorandManager.playerAccount.address}"))
                 .build()
-            println("about to make connection: ")
-                createFactory(client).newEventSource(request, object : EventSourceListener() {
-                    override fun onOpen(eventSource: EventSource, response: Response) {
-                        println("is here")
-                        Gdx.app.log("SSE", "Connection opened")
-                    }
+            createFactory(client).newEventSource(request, object : EventSourceListener() {
+                override fun onOpen(eventSource: EventSource, response: Response) {
+                    Gdx.app.log("SSE", "Connection opened")
+                }
 
-                    override fun onEvent(eventSource: EventSource, id: String?, type: String?, data: String) {
-                        val sseEvent = JsonConfig.json.decodeFromString<SseEvent>(data)
-                        val receivedGameState = sseEvent.data
-                        if(receivedGameState.gameTime > newGameState.gameTime){
-                            newGameState = receivedGameState
-                        }
-                        // Handle game state update
+                override fun onEvent(eventSource: EventSource, id: String?, type: String?, data: String) {
+                    val sseEvent = JsonConfig.json.decodeFromString<SseEvent>(data)
+                    val receivedGameState = sseEvent.data
+                    if (receivedGameState.gameTime > newGameState.gameTime) {
+                        newGameState = receivedGameState
                     }
+                    // Handle game state update
+                }
 
-                    override fun onClosed(eventSource: EventSource) {
-                        Gdx.app.log("SSE", "Connection closed")
-                    }
+                override fun onClosed(eventSource: EventSource) {
+                    Gdx.app.log("SSE", "Connection closed")
+                }
 
-                    override fun onFailure(eventSource: EventSource, t: Throwable?, response: Response?) {
-                        println("here")
-                    }
-                })
+                override fun onFailure(eventSource: EventSource, t: Throwable?, response: Response?) {
+                    println("here")
+                }
+            })
         }
 
     }

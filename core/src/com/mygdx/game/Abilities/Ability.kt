@@ -22,7 +22,6 @@ abstract class Ability(val cooldown: Float) {
     fun tryActivate(targetPos: Vector2){
         if(timer.tryUseCooldown()){
             onActivate(targetPos)
-            println("activating fireball!")
         }
     }
 

@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
-import com.mygdx.game.Algorand.EBOSecurePreferences
+import com.mygdx.game.AndroidAdapters.EBOSecurePreferences
 import java.io.IOException
 import java.security.GeneralSecurityException
 

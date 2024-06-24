@@ -51,7 +51,6 @@ class AlgorandManager {
                 val byteBuffer = ByteBuffer.wrap(decodedBytes)
                 val longValue = byteBuffer.long
                 val result = longValue.toInt()
-                println(result)
 
                 abilityPriceMap[it] = result
             }
@@ -145,7 +144,6 @@ class AlgorandManager {
             val sp: TransactionParametersResponse = rsp.body()
 
             val initialBalance = EBOAlgorandClient.AccountInformation(playerAccount.address).execute().body().amount
-            println("Initial Balance: $initialBalance microAlgos")
 
             val atc = AtomicTransactionComposer()
             val transactionSigner = playerAccount.transactionSigner
@@ -184,8 +182,6 @@ class AlgorandManager {
 
             atc.addTransaction(TransactionWithSigner(sendGold, transactionSigner))
             atc.addTransaction(TransactionWithSigner(buyAbility, transactionSigner))
-
-            println("Transaction fee: ${sp.fee} microAlgos")
 
             val coutineScope = CoroutineScope(Dispatchers.Default)
             coutineScope.launch {

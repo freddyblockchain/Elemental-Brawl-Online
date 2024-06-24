@@ -37,7 +37,6 @@ class AbilityButton(val ability: Ability, val abilityOnPress: () -> Unit) : UIEl
 
     override fun onPress(): Boolean {
         if(this.cooldownTimer.cooldownAvailable()){
-            println("pressed!")
             this.active = true
             abilityOnPress()
             return true

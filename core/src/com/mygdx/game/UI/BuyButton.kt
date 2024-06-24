@@ -28,9 +28,7 @@ class BuyButton(val shopItem: ShopItem): UIElement {
     init {
         sprite.setSize(size.x, size.y)
         val position = Vector3(200f, 32f, 0f)
-        println("pos before: " + position)
         camera.project(position)
-        println("pos after: " + position)
         sprite.setPosition(position.x, Gdx.graphics.height - position.y - sprite.height)
     }
     override fun renderShape() {

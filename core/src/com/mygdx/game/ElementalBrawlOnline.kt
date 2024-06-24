@@ -14,7 +14,8 @@ import com.mygdx.game.Action.PlayerAction
 import com.mygdx.game.Algorand.AlgorandManager
 import com.mygdx.game.Algorand.AlgorandManager.Companion.playerIsOptedIntoGold
 import com.mygdx.game.Algorand.AlgorandManager.Companion.updatePlayerState
-import com.mygdx.game.Algorand.EBOSecurePreferences
+import com.mygdx.game.AndroidAdapters.EBOSecurePreferences
+import com.mygdx.game.AndroidAdapters.SpeechRecognizer
 import com.mygdx.game.GameModes.GameMode
 import com.mygdx.game.GameModes.MainMode
 import com.mygdx.game.GameObjects.GameObject.MoveableObject
@@ -55,7 +56,7 @@ lateinit var playerStartPos: Vector2
 
 var camera: OrthographicCamera = OrthographicCamera()
 
-class ElementalBrawlOnline(val securePreferences: EBOSecurePreferences) : ApplicationAdapter() {
+class ElementalBrawlOnline(val securePreferences: EBOSecurePreferences, val speechRecognizer: SpeechRecognizer) : ApplicationAdapter() {
 
     lateinit var inputProcessor: MyInputProcessor
     lateinit var shapeRenderer: ShapeRenderer
