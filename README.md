@@ -28,6 +28,10 @@ The goal of the game is to defeat other players, and attain new
 abilities by doing so. The game is loosely based on the Warcraft
 3 mod "Warlock".
 
+# Status
+Elemental Brawl Online is currently not playable, as the project is done, 
+and I don't want to pay the server costs of having it running
+
 ## Run Instructions
 
 There are two ways to run the game:
